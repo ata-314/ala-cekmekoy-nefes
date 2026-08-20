@@ -112,29 +112,30 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
         {fieldError("email")}
       </div>
 
-      <div>
-        <label htmlFor={id("unitType")} className="mb-1.5 block text-xs font-semibold tracking-wide text-cream/80">
+      <fieldset>
+        <legend className="mb-2 block text-xs font-semibold tracking-wide text-cream/80">
           {form.fields.unitType.label}
-        </label>
-        <select
-          id={id("unitType")}
-          name="unitType"
-          defaultValue=""
-          className="field"
-          aria-invalid={!!errors.unitType}
+        </legend>
+        <div
+          className="flex flex-wrap gap-2"
           aria-describedby={errors.unitType ? id("unitType-error") : undefined}
         >
-          <option value="" disabled>
-            {form.fields.unitType.placeholder}
-          </option>
           {form.unitTypes.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
+            <label key={t} className="cursor-pointer">
+              <input
+                type="radio"
+                name="unitType"
+                value={t}
+                className="peer sr-only"
+              />
+              <span className="block rounded-full border border-cream/20 bg-forest-950/35 px-4 py-2 text-xs font-semibold text-cream/70 transition-all duration-300 hover:border-cream/45 peer-checked:border-champagne/80 peer-checked:bg-champagne/15 peer-checked:text-champagne peer-focus-visible:outline-2 peer-focus-visible:outline-champagne">
+                {t}
+              </span>
+            </label>
           ))}
-        </select>
+        </div>
         {fieldError("unitType")}
-      </div>
+      </fieldset>
 
       <div>
         <label htmlFor={id("kvkk")} className="flex cursor-pointer items-start gap-2.5">
@@ -158,10 +159,19 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
 
       <button
         type="submit"
-        className="cta mt-1 rounded-full bg-champagne px-6 py-3.5 text-sm font-bold tracking-wide text-forest-950"
+        className="cta group mt-1 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-champagne to-[#b8925a] px-6 py-3.5 text-sm font-bold tracking-wide text-forest-950"
       >
         {form.submit}
+        <span
+          aria-hidden
+          className="transition-transform duration-300 group-hover:translate-x-1"
+        >
+          →
+        </span>
       </button>
+      <p className="text-center text-[0.65rem] leading-relaxed text-cream/45">
+        {form.privacyNote}
+      </p>
     </form>
   );
 }

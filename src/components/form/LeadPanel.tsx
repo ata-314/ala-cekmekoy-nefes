@@ -30,7 +30,12 @@ export default function LeadPanel({
               exit={{ x: 60, opacity: 0 }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
             >
-              <div className="glass relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-3xl p-7 xl:p-8">
+              <div className="glass relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[28px] p-7 xl:p-8">
+                {/* Champagne accent hairline */}
+                <div
+                  aria-hidden
+                  className="absolute inset-x-8 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-champagne/80 to-transparent"
+                />
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
@@ -39,8 +44,13 @@ export default function LeadPanel({
                 >
                   ✕
                 </button>
+                <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+                  ALA Çekmeköy Nefes
+                </p>
                 <h2 className="font-display text-3xl text-cream">{form.title}</h2>
-                <p className="mb-6 mt-1 pr-10 text-sm text-cream/65">{form.sub}</p>
+                <p className="mb-6 mt-1.5 pr-10 text-sm leading-relaxed text-cream/65">
+                  {form.sub}
+                </p>
                 <LeadForm idPrefix="desktop" />
               </div>
             </motion.aside>

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { lenisStore } from "@/lib/lenisStore";
 
 /**
  * Lenis smooth scroll wired into GSAP's ticker — the single raf chain.
@@ -20,6 +21,7 @@ export default function SmoothScroll({ enabled }: { enabled: boolean }) {
     });
 
     lenis.on("scroll", ScrollTrigger.update);
+    lenisStore.current = lenis;
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
@@ -27,6 +29,7 @@ export default function SmoothScroll({ enabled }: { enabled: boolean }) {
 
     return () => {
       gsap.ticker.remove(raf);
+      lenisStore.current = null;
       lenis.destroy();
     };
   }, [enabled]);

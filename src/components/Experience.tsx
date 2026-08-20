@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
+import { scrollToProgress } from "@/lib/lenisStore";
+import Header from "@/components/Header";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollVideo from "@/components/ScrollVideo";
 import StaticExperience from "@/components/StaticExperience";
@@ -24,8 +26,20 @@ export default function Experience() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
 
+  // Menu "Bilgi Al": desktop reveals the side panel (scrolling to the close),
+  // mobile opens the bottom sheet directly.
+  const handleContact = () => {
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      setPanelOpen(true);
+      scrollToProgress(1);
+    } else {
+      setSheetOpen(true);
+    }
+  };
+
   return (
     <>
+      <Header onContact={handleContact} />
       <SmoothScroll enabled={reduced === false} />
       <LeadPanel open={panelOpen} onOpenChange={setPanelOpen} />
       <MobileLeadSheet open={sheetOpen} onOpenChange={setSheetOpen} />

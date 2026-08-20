@@ -7,14 +7,6 @@ import { gsap } from "@/lib/gsap";
 import { gallery, type GalleryItem } from "@/content/project";
 import SmartImage from "@/components/SmartImage";
 
-/**
- * 3D coverflow carousel: an endless, scrollbar-free strip that drifts on its
- * own (GSAP ticker), wraps seamlessly (items rendered twice), and angles each
- * card in perspective based on its distance from center. On fine pointers the
- * cursor steers the drift speed/direction; clicking a card opens a lightbox
- * (framer-motion, portaled to <body> so ancestor transforms can't trap it).
- * Card positions are computed mathematically — no per-frame rect reads.
- */
 const subscribeNoop = () => () => {};
 const subscribeReducedMotion = (cb: () => void) => {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -22,11 +14,18 @@ const subscribeReducedMotion = (cb: () => void) => {
   return () => mq.removeEventListener("change", cb);
 };
 
+/**
+ * True cylinder gallery: every card sits on a 3D ring
+ * (rotateY(i·step) translateZ(radius)) and the whole ring spins in place —
+ * nothing enters or exits. GSAP's ticker drives the rotation; on fine
+ * pointers the cursor steers spin speed/direction. Cards facing away dim and
+ * lose pointer events; clicking a front card opens a lightbox portaled to
+ * <body> (ancestor GSAP transforms would trap `fixed` otherwise).
+ */
 export default function Gallery3D() {
   const wrapRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const ringRef = useRef<HTMLDivElement>(null);
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
-  // Hydration-safe flags without effect-driven setState.
   const mounted = useSyncExternalStore(subscribeNoop, () => true, () => false);
   const reduced = useSyncExternalStore(
     subscribeReducedMotion,
@@ -36,61 +35,55 @@ export default function Gallery3D() {
 
   useEffect(() => {
     const wrap = wrapRef.current;
-    const track = trackRef.current;
-    if (!wrap || !track || reduced) return;
+    const ring = ringRef.current;
+    if (!wrap || !ring || reduced) return;
 
-    const cards = Array.from(track.children) as HTMLElement[];
-    if (!cards.length) return;
+    const cards = Array.from(ring.children) as HTMLElement[];
+    const N = cards.length;
+    if (!N) return;
 
-    const BASE = 42; // px/s auto drift
-    let x = 0;
-    let speed = BASE;
-    let target = BASE;
-    let cardW = 0;
-    let gap = 0;
-    let halfW = 0;
-    let wrapW = 0;
+    const step = 360 / N;
+    const BASE = 11; // deg/s auto spin
+    let angle = 0;
+    let speed = -BASE;
+    let target = -BASE;
+    let radius = 0;
 
     const measure = () => {
-      cardW = cards[0].offsetWidth;
-      gap = parseFloat(getComputedStyle(track).columnGap || "0") || 0;
-      halfW = (cards.length / 2) * (cardW + gap);
-      wrapW = wrap.offsetWidth;
+      const cardW = cards[0].offsetWidth;
+      // Ring radius so neighbouring cards sit edge-to-edge with a small gap.
+      radius = (cardW / 2) / Math.tan(Math.PI / N) + 36;
+      cards.forEach((card, i) => {
+        card.style.transform = `translate(-50%, -50%) rotateY(${i * step}deg) translateZ(${radius}px)`;
+      });
     };
     measure();
     window.addEventListener("resize", measure);
 
-    // Cursor steers the drift: left half slows/reverses, right half speeds up.
+    // Cursor steers the spin: left half reverses, right half accelerates.
+    const fine = window.matchMedia("(pointer: fine)").matches;
     const onMove = (e: PointerEvent) => {
       const r = wrap.getBoundingClientRect();
       const n = ((e.clientX - r.left) / r.width - 0.5) * 2; // -1..1
-      target = BASE + n * 150;
+      target = -(BASE + Math.abs(n) * 26) * Math.sign(n || 1);
     };
     const onLeave = () => {
-      target = BASE;
+      target = -BASE;
     };
-    const fine = window.matchMedia("(pointer: fine)").matches;
     if (fine) {
       wrap.addEventListener("pointermove", onMove);
       wrap.addEventListener("pointerleave", onLeave);
     }
 
     const tick = (_t: number, deltaMS: number) => {
-      speed += (target - speed) * 0.06;
-      x = (((x + (speed * deltaMS) / 1000) % halfW) + halfW) % halfW;
-      track.style.transform = `translate3d(${-x}px,0,0)`;
-
-      const mid = wrapW / 2;
-      for (let i = 0; i < cards.length; i++) {
-        let center = i * (cardW + gap) + cardW / 2 - x;
-        // Bring the duplicate set's cards into the visible wrap window.
-        if (center < -cardW) center += halfW * 2;
-        const n = Math.max(-1.4, Math.min(1.4, (center - mid) / mid));
-        const a = Math.min(Math.abs(n), 1);
-        cards[i].style.transform =
-          `rotateY(${(-n * 26).toFixed(2)}deg) translateZ(${((1 - a) * 110).toFixed(1)}px) scale(${(0.9 + (1 - a) * 0.12).toFixed(3)})`;
-        cards[i].style.opacity = `${0.45 + (1 - a) * 0.55}`;
-        cards[i].style.zIndex = `${100 - Math.round(a * 60)}`;
+      speed += (target - speed) * 0.05;
+      angle = (angle + (speed * deltaMS) / 1000) % 360;
+      ring.style.transform = `translateZ(${-radius}px) rotateX(-5deg) rotateY(${angle}deg)`;
+      for (let i = 0; i < N; i++) {
+        const theta = ((i * step + angle) * Math.PI) / 180;
+        const facing = Math.cos(theta); // 1 = facing viewer
+        cards[i].style.opacity = `${0.3 + 0.7 * ((facing + 1) / 2)}`;
+        cards[i].style.pointerEvents = facing > 0.25 ? "auto" : "none";
       }
     };
     gsap.ticker.add(tick);
@@ -132,20 +125,19 @@ export default function Gallery3D() {
     <>
       <div
         ref={wrapRef}
-        className="relative -mx-5 overflow-hidden py-6 sm:-mx-8 [perspective:1200px]"
+        className="relative -mx-5 flex h-[230px] items-center justify-center overflow-hidden sm:-mx-8 sm:h-[300px] [perspective:1500px]"
       >
         <div
-          ref={trackRef}
-          className="flex w-max gap-5 [transform-style:preserve-3d] will-change-transform"
+          ref={ringRef}
+          className="relative h-0 w-0 [transform-style:preserve-3d] will-change-transform"
         >
-          {[...gallery.items, ...gallery.items].map((item, i) => (
+          {gallery.items.map((item) => (
             <button
-              key={`${item.src}-${i}`}
+              key={item.src}
               type="button"
               onClick={() => setLightbox(item)}
               aria-label={`${item.alt} — büyüt`}
-              tabIndex={i < gallery.items.length ? 0 : -1}
-              className="glass-light w-[240px] shrink-0 cursor-zoom-in overflow-hidden rounded-2xl p-1.5 [transform-style:preserve-3d] sm:w-[320px]"
+              className="glass-light absolute left-0 top-0 w-[190px] cursor-zoom-in overflow-hidden rounded-2xl p-1.5 sm:w-[260px]"
             >
               <SmartImage
                 src={item.src}
@@ -155,9 +147,6 @@ export default function Gallery3D() {
             </button>
           ))}
         </div>
-        {/* Soft edge fades instead of scrollbars */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-forest-950/50 to-transparent sm:w-28" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-forest-950/50 to-transparent sm:w-28" />
       </div>
       {mounted && createPortal(<Lightbox item={lightbox} onClose={() => setLightbox(null)} />, document.body)}
     </>

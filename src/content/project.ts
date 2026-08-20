@@ -33,6 +33,16 @@ export const seo = {
     "Çekmeköy'ün orman dokusunun yanı başında: 14.300 m² arazi üzerinde 9 blok, yalnızca 72 seçkin konut. 3+1 ve 4+1 geniş daireler ile özel bahçeli seçenekler, lansmana özel fiyat ve ödeme avantajlarıyla.",
 } as const;
 
+/** Menu items scroll to a fraction of the experience (same mapping works for the reduced-motion layout). */
+export const nav = {
+  items: [
+    { label: "Proje", progress: 0.25 },
+    { label: "Avantajlar", progress: 0.5 },
+    { label: "Galeri", progress: 0.78 },
+  ],
+  contact: "Bilgi Al",
+} as const;
+
 export const intro = {
   eyebrow: "Çekmeköy · İstanbul",
   heading: "Doğaya yakın.\nHayata bağlı.",
@@ -119,6 +129,7 @@ export const form = {
     href: "#kvkk",
   },
   submit: "Bilgi Al",
+  privacyNote: "Bilgileriniz gizli tutulur; yalnızca sizinle iletişim kurmak için kullanılır.",
   success: {
     title: "Talebiniz alındı.",
     body: "Satış ekibimiz en kısa sürede sizinle iletişime geçecek.",
