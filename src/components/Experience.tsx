@@ -163,7 +163,9 @@ function AnimatedStage({
           <section data-phase="advantages" className={phaseClass}>
             <AdvantagesPhase />
           </section>
-          <section data-phase="gallery" className={`pointer-events-auto ${phaseClass}`}>
+          {/* Gallery ignores the form clearance: the cylinder spans the full
+              stage width and simply passes behind the glass panel. */}
+          <section data-phase="gallery" className="pointer-events-auto absolute inset-0">
             <GalleryPhase />
           </section>
           <section data-phase="closing" className={`pointer-events-auto ${phaseClass}`}>

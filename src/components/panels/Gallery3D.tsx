@@ -52,7 +52,7 @@ export default function Gallery3D() {
     const measure = () => {
       const cardW = cards[0].offsetWidth;
       // Ring radius so neighbouring cards sit edge-to-edge with a small gap.
-      radius = (cardW / 2) / Math.tan(Math.PI / N) + 36;
+      radius = (cardW / 2) / Math.tan(Math.PI / N) + 48;
       cards.forEach((card, i) => {
         card.style.transform = `translate(-50%, -50%) rotateY(${i * step}deg) translateZ(${radius}px)`;
       });
@@ -125,7 +125,7 @@ export default function Gallery3D() {
     <>
       <div
         ref={wrapRef}
-        className="relative -mx-5 flex h-[230px] items-center justify-center overflow-hidden sm:-mx-8 sm:h-[300px] [perspective:1500px]"
+        className="relative -mx-5 flex h-[250px] items-center justify-center overflow-hidden sm:-mx-8 sm:h-[350px] lg:h-[400px] [perspective:1900px]"
       >
         <div
           ref={ringRef}
@@ -137,7 +137,7 @@ export default function Gallery3D() {
               type="button"
               onClick={() => setLightbox(item)}
               aria-label={`${item.alt} — büyüt`}
-              className="glass-light absolute left-0 top-0 w-[190px] cursor-zoom-in overflow-hidden rounded-2xl p-1.5 sm:w-[260px]"
+              className="glass-light absolute left-0 top-0 w-[210px] cursor-zoom-in overflow-hidden rounded-2xl p-1.5 sm:w-[310px] lg:w-[350px]"
             >
               <SmartImage
                 src={item.src}
