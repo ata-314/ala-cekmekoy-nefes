@@ -30,7 +30,7 @@ export default function ClosingPhase({
           </button>
         )}
         <p className="mt-8 hidden text-[0.7rem] uppercase tracking-[0.3em] text-cream/45 lg:block">
-          Soldaki formu doldurun, sizi arayalım
+          Yandaki formu doldurun, sizi arayalım
         </p>
       </div>
     </div>

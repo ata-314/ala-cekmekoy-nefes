@@ -15,8 +15,8 @@ npm run build  # production build
 | Asset | Path | Notes |
 |---|---|---|
 | Logo (white, on-dark) | `public/assets/logo/logo.png` | From client. A text wordmark renders automatically if the file is ever missing. |
-| Scrub video | `public/assets/video/hero.mp4` | 1600w, no audio, dense keyframes (`-g 8`) for smooth scroll-seeking. ~13 MB. |
-| Mobile loop video | `public/assets/video/hero-mobile.mp4` | 960w ambient loop for touch devices (~4 MB); chosen client-side, only one file downloads. |
+| Scrub video | `public/assets/video/hero.mp4` | Full 1920w, CRF 21, no audio, dense keyframes (`-g 8`) for smooth scroll-seeking. ~28 MB. |
+| Mobile loop video | `public/assets/video/hero-mobile.mp4` | 1280w ambient loop for touch devices (~10 MB); chosen client-side, only one file downloads. |
 | Poster | `public/assets/video/poster.jpg` | First frame; shown before load and as reduced-motion background. |
 | Gallery | `public/assets/gallery/01–09.jpg` | 1600w JPGs converted from client PNGs. Originals + content brief archived in the agent workspace (`projects/ala-cekmekoy-nefes/data/imports/`). |
 | Advantage icons | `public/assets/icons/*.svg` | Hand-drawn line icons (nature / location / plan / comfort) in champagne. |
@@ -24,9 +24,9 @@ npm run build  # production build
 To replace the video, re-encode with dense keyframes so scrubbing stays smooth:
 
 ```bash
-ffmpeg -i source.mp4 -an -vf scale=1600:-2 -c:v libx264 -preset slow -crf 26 -g 8 -movflags +faststart public/assets/video/hero.mp4
-ffmpeg -i source.mp4 -an -vf scale=960:-2 -c:v libx264 -preset slow -crf 28 -g 50 -movflags +faststart public/assets/video/hero-mobile.mp4
-ffmpeg -i public/assets/video/hero.mp4 -frames:v 1 -q:v 3 public/assets/video/poster.jpg
+ffmpeg -i source.mp4 -an -vf "scale=1920:-2,eq=saturation=1.08" -c:v libx264 -preset slow -crf 21 -g 8 -movflags +faststart public/assets/video/hero.mp4
+ffmpeg -i source.mp4 -an -vf "scale=1280:-2,eq=saturation=1.08" -c:v libx264 -preset slow -crf 24 -g 50 -movflags +faststart public/assets/video/hero-mobile.mp4
+ffmpeg -i public/assets/video/hero.mp4 -frames:v 1 -q:v 2 public/assets/video/poster.jpg
 ```
 
 ## Where to edit content

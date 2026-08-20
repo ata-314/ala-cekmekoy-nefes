@@ -22,16 +22,20 @@ import ClosingPhase from "@/components/panels/ClosingPhase";
 export default function Experience() {
   const reduced = usePrefersReducedMotion();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   return (
     <>
       <SmoothScroll enabled={reduced === false} />
-      <LeadPanel />
+      <LeadPanel open={panelOpen} onOpenChange={setPanelOpen} />
       <MobileLeadSheet open={sheetOpen} onOpenChange={setSheetOpen} />
       {reduced ? (
         <StaticExperience onCtaClick={() => setSheetOpen(true)} />
       ) : (
-        <AnimatedStage onCtaClick={() => setSheetOpen(true)} />
+        <AnimatedStage
+          onCtaClick={() => setSheetOpen(true)}
+          panelOpen={panelOpen}
+        />
       )}
     </>
   );
@@ -43,9 +47,20 @@ export default function Experience() {
  * phases fade/translate in and out in sequence. The page never "flows down" —
  * everything happens inside the sticky viewport.
  */
-function AnimatedStage({ onCtaClick }: { onCtaClick: () => void }) {
+function AnimatedStage({
+  onCtaClick,
+  panelOpen,
+}: {
+  onCtaClick: () => void;
+  panelOpen: boolean;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  // Phases clear the fixed form on the right while it is open; the padding
+  // eases away when the panel is dismissed so content re-centers.
+  const phaseClass = `absolute inset-0 transition-[padding] duration-700 ease-out ${
+    panelOpen ? "lg:pr-[420px] xl:pr-[450px]" : ""
+  }`;
 
   useGSAP(
     () => {
@@ -131,19 +146,19 @@ function AnimatedStage({ onCtaClick }: { onCtaClick: () => void }) {
 
         {/* Each phase clears the fixed form on desktop (absolute children ignore parent padding) */}
         <div className="pointer-events-none absolute inset-0 z-10">
-          <section data-phase="intro" className="absolute inset-0 lg:pl-[420px] xl:pl-[450px]">
+          <section data-phase="intro" className={phaseClass}>
             <IntroPhase />
           </section>
-          <section data-phase="info" className="absolute inset-0 lg:pl-[420px] xl:pl-[450px]">
+          <section data-phase="info" className={phaseClass}>
             <InfoPhase />
           </section>
-          <section data-phase="advantages" className="absolute inset-0 lg:pl-[420px] xl:pl-[450px]">
+          <section data-phase="advantages" className={phaseClass}>
             <AdvantagesPhase />
           </section>
-          <section data-phase="gallery" className="pointer-events-auto absolute inset-0 lg:pl-[420px] xl:pl-[450px]">
+          <section data-phase="gallery" className={`pointer-events-auto ${phaseClass}`}>
             <GalleryPhase />
           </section>
-          <section data-phase="closing" className="pointer-events-auto absolute inset-0 lg:pl-[420px] xl:pl-[450px]">
+          <section data-phase="closing" className={`pointer-events-auto ${phaseClass}`}>
             <ClosingPhase onCtaClick={onCtaClick} />
           </section>
         </div>

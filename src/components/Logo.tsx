@@ -8,7 +8,11 @@ import { useImageFallback } from "@/lib/useImageFallback";
  * Until the file is dropped in, falls back to an elegant text wordmark —
  * the project identity itself is never altered, only awaited.
  */
-export default function Logo({ className = "h-9" }: { className?: string }) {
+export default function Logo({
+  className = "h-14 sm:h-16",
+}: {
+  className?: string;
+}) {
   const { imgRef, missing, onError } = useImageFallback();
 
   if (missing) {

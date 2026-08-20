@@ -23,7 +23,7 @@ export default function StaticExperience({
         style={{ backgroundImage: `url(${assets.heroPoster})` }}
       />
       <div aria-hidden className="fixed inset-0 bg-forest-950/60" />
-      <div className="relative z-10 lg:pl-[420px] xl:pl-[450px]">
+      <div className="relative z-10 lg:pr-[420px] xl:pr-[450px]">
         <section className="min-h-screen">
           <IntroPhase />
         </section>
