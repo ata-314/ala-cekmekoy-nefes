@@ -1,0 +1,38 @@
+import { closing } from "@/content/project";
+
+export default function ClosingPhase({
+  onCtaClick,
+}: {
+  onCtaClick?: () => void;
+}) {
+  return (
+    <div className="flex h-full items-center justify-center px-5 sm:px-8">
+      <div
+        data-reveal
+        className="glass max-w-xl rounded-3xl p-8 text-center sm:p-12"
+      >
+        <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+          {closing.eyebrow}
+        </p>
+        <h2 className="font-display text-4xl leading-tight text-cream sm:text-6xl">
+          {closing.heading}
+        </h2>
+        <p className="mx-auto mt-4 max-w-sm text-sm leading-relaxed text-cream/75 sm:text-base">
+          {closing.body}
+        </p>
+        {onCtaClick && (
+          <button
+            type="button"
+            onClick={onCtaClick}
+            className="cta mt-8 rounded-full bg-champagne px-8 py-3.5 text-sm font-bold tracking-wide text-forest-950 lg:hidden"
+          >
+            {closing.cta}
+          </button>
+        )}
+        <p className="mt-8 hidden text-[0.7rem] uppercase tracking-[0.3em] text-cream/45 lg:block">
+          Soldaki formu doldurun, sizi arayalım
+        </p>
+      </div>
+    </div>
+  );
+}
