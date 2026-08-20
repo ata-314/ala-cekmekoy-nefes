@@ -108,13 +108,7 @@ function AnimatedStage({
       phaseIn("advantages", 44);
       phaseOut("advantages", 62);
       phaseIn("gallery", 71);
-      // Slow cinematic pan across the gallery strip while it is on stage.
-      tl.fromTo(
-        "[data-gallery-strip]",
-        { x: 60 },
-        { x: -80, duration: 16, ease: "none" },
-        72
-      );
+      // (The 3D carousel drives its own motion — no scroll pan here.)
       phaseOut("gallery", 84);
       phaseIn("closing", 92);
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units
