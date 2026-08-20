@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { form, closing } from "@/content/project";
+import { form } from "@/content/project";
 import LeadForm from "./LeadForm";
 
 /**
@@ -35,7 +35,7 @@ export default function MobileLeadSheet({
         onClick={() => onOpenChange(true)}
         className="cta fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full bg-champagne px-8 py-3.5 text-sm font-bold tracking-wide text-forest-950 shadow-xl"
       >
-        {closing.cta}
+        {form.submit}
       </button>
 
       <AnimatePresence>

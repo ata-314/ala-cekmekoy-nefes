@@ -1,15 +1,20 @@
 "use client";
 
-import { useRef, useState, type RefObject } from "react";
-import { useGSAP } from "@gsap/react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { gsap } from "@/lib/gsap";
 import { assets, identity } from "@/content/project";
 
 /**
  * Background promo video, scrubbed frame-by-frame by scroll on fine-pointer
- * devices. On touch devices currentTime-scrubbing is choppy and battery-hungry,
- * so the video plays as a muted ambient loop instead (mobile fallback).
- * A missing/broken file degrades to the poster/gradient — the page never breaks.
+ * devices (dense-keyframe hero.mp4). Touch devices get a lightweight ambient
+ * loop (hero-mobile.mp4) instead — currentTime-scrubbing is choppy and
+ * battery-hungry there. The source is chosen client-side so only one file is
+ * ever downloaded. A missing/broken file degrades to the poster/gradient.
+ *
+ * Deliberately a passive useEffect, not useGSAP: this component mounts inside
+ * the track element, and child *layout* effects run before the parent ref is
+ * attached — trackRef.current would still be null. The tween + ScrollTrigger
+ * are killed explicitly in the cleanup instead.
  */
 export default function ScrollVideo({
   trackRef,
@@ -19,46 +24,51 @@ export default function ScrollVideo({
   const videoRef = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false);
 
-  useGSAP(
-    (context, contextSafe) => {
-      const video = videoRef.current;
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    let tween: gsap.core.Tween | undefined;
+
+    const onMeta = () => {
+      if (isTouch) {
+        video.loop = true;
+        video.play().catch(() => {
+          /* autoplay blocked → poster stays visible, fine */
+        });
+        return;
+      }
       const track = trackRef.current;
-      if (!video || !track || !contextSafe) return;
-
-      const isTouch = window.matchMedia("(pointer: coarse)").matches;
-
-      const onMeta = contextSafe(() => {
-        if (isTouch) {
-          video.loop = true;
-          video.play().catch(() => {
-            /* autoplay blocked → poster stays visible, fine */
-          });
-          return;
+      if (!track) return;
+      // Scroll-scrubbed playback: one owner (GSAP) for currentTime.
+      tween = gsap.fromTo(
+        video,
+        { currentTime: 0 },
+        {
+          currentTime: video.duration || 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: track,
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 1.2, // lag smoothing → fluid, controlled frame advance
+          },
         }
-        // Scroll-scrubbed playback: one owner (GSAP) for currentTime.
-        gsap.fromTo(
-          video,
-          { currentTime: 0 },
-          {
-            currentTime: video.duration || 1,
-            ease: "none",
-            scrollTrigger: {
-              trigger: track,
-              start: "top top",
-              end: "bottom bottom",
-              scrub: 1.2, // lag smoothing → fluid, controlled frame advance
-            },
-          }
-        );
-      });
+      );
+    };
 
-      if (video.readyState >= 1) onMeta();
-      else video.addEventListener("loadedmetadata", onMeta, { once: true });
+    video.addEventListener("loadedmetadata", onMeta, { once: true });
+    video.src = isTouch ? assets.heroVideoMobile : assets.heroVideo;
+    video.load();
+    if (video.readyState >= 1) onMeta();
 
-      return () => video.removeEventListener("loadedmetadata", onMeta);
-    },
-    { scope: trackRef }
-  );
+    return () => {
+      video.removeEventListener("loadedmetadata", onMeta);
+      tween?.scrollTrigger?.kill();
+      tween?.kill();
+    };
+  }, [trackRef]);
 
   return (
     <div className="absolute inset-0" aria-hidden>
@@ -68,7 +78,6 @@ export default function ScrollVideo({
         <video
           ref={videoRef}
           className="absolute inset-0 h-full w-full object-cover"
-          src={assets.heroVideo}
           poster={assets.heroPoster}
           preload="auto"
           muted

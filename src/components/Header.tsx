@@ -8,12 +8,9 @@ export default function Header() {
         <div className="pointer-events-auto">
           <Logo />
         </div>
-        <a
-          href={`tel:${identity.phone.replace(/\s/g, "")}`}
-          className="cta glass-light pointer-events-auto rounded-full px-4 py-2 text-xs font-semibold tracking-wide text-cream sm:px-5 sm:text-sm"
-        >
-          {identity.phoneDisplay}
-        </a>
+        <span className="glass-light rounded-full px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-sand-300 sm:px-5 sm:text-xs">
+          {identity.headerBadge}
+        </span>
       </div>
     </header>
   );

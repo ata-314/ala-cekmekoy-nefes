@@ -10,31 +10,28 @@ npm run dev    # http://localhost:3000
 npm run build  # production build
 ```
 
-## Where to drop your assets
+## Assets (all in place, 2026-08-20)
 
-The site runs today with graceful placeholders; drop the real files at these exact paths and refresh — no code changes needed.
-
-| Asset | Path | Format / notes |
+| Asset | Path | Notes |
 |---|---|---|
-| Logo (on-dark) | `public/assets/logo/logo.svg` | SVG preferred (PNG works — then update `assets.logo` in `src/content/project.ts`). Shown top-left; a text wordmark renders until the file exists. |
-| Promo video | `public/assets/video/hero.mp4` | H.264 MP4, ~10–30 s, 1080p+, **no audio needed** (always muted). See encoding note below. |
-| Video poster | `public/assets/video/poster.jpg` | First frame of the video, ≥1920×1080. Shown before load, and as background in reduced-motion mode. |
-| Gallery images | `public/assets/gallery/01.jpg` … `04.jpg` | 4:3, ≥1600px wide. Add/remove items in `gallery.items` in `src/content/project.ts`. |
-| Advantage icons | `public/assets/icons/nature.svg`, `location.svg`, `family.svg`, `security.svg` | Monochrome SVG, ~24px grid. A gold diamond glyph renders until each file exists. |
+| Logo (white, on-dark) | `public/assets/logo/logo.png` | From client. A text wordmark renders automatically if the file is ever missing. |
+| Scrub video | `public/assets/video/hero.mp4` | 1600w, no audio, dense keyframes (`-g 8`) for smooth scroll-seeking. ~13 MB. |
+| Mobile loop video | `public/assets/video/hero-mobile.mp4` | 960w ambient loop for touch devices (~4 MB); chosen client-side, only one file downloads. |
+| Poster | `public/assets/video/poster.jpg` | First frame; shown before load and as reduced-motion background. |
+| Gallery | `public/assets/gallery/01–09.jpg` | 1600w JPGs converted from client PNGs. Originals + content brief archived in the agent workspace (`projects/ala-cekmekoy-nefes/data/imports/`). |
+| Advantage icons | `public/assets/icons/*.svg` | Hand-drawn line icons (nature / location / plan / comfort) in champagne. |
 
-### Video encoding for smooth scrubbing
-
-Scroll-scrubbing seeks the video every frame, so it needs dense keyframes:
+To replace the video, re-encode with dense keyframes so scrubbing stays smooth:
 
 ```bash
-ffmpeg -i source.mp4 -an -vf scale=1920:-2 -c:v libx264 -g 1 -crf 22 -movflags +faststart public/assets/video/hero.mp4
+ffmpeg -i source.mp4 -an -vf scale=1600:-2 -c:v libx264 -preset slow -crf 26 -g 8 -movflags +faststart public/assets/video/hero.mp4
+ffmpeg -i source.mp4 -an -vf scale=960:-2 -c:v libx264 -preset slow -crf 28 -g 50 -movflags +faststart public/assets/video/hero-mobile.mp4
+ffmpeg -i public/assets/video/hero.mp4 -frames:v 1 -q:v 3 public/assets/video/poster.jpg
 ```
-
-`-g 1` makes every frame a keyframe (bigger file, perfectly smooth seeking). On touch devices the video plays as an ambient loop instead of scrubbing.
 
 ## Where to edit content
 
-Everything editable lives in **`src/content/project.ts`** — one typed file: identity & phone, SEO meta, all panel copy, stats, advantages, gallery list, unit types, form labels and KVKK text. Values marked `[PLACEHOLDER]` are layout copy and must be replaced with real project facts before publishing.
+Everything editable lives in **`src/content/project.ts`** — one typed file: identity, SEO meta, all panel copy, stats, advantages, gallery list, unit types, form labels and KVKK text. Copy is distilled from the client's content guide (PAS flow: Çekmeköy → micro-location → project → residence → value → launch); facts like 14.300 m² / 9 blocks / 72 units / 197–333 m² come straight from it. Still pending from the client: sales phone number and the real KVKK document link.
 
 ## Where does the form data go?
 
