@@ -60,10 +60,26 @@ export const info = {
   heading: "Daha az yoğunluk.\nDaha fazla Nefes.",
   body: "Ala Çekmeköy Nefes, Çekmeköy'ün orman dokusunun yanı başında, 14.300 m² arazi üzerinde yalnızca 72 konutluk düşük yoğunluklu bir yerleşim sunuyor: daha ferah bir site yaşamı, daha fazla mahremiyet, daha geniş peyzaj.",
   stats: [
-    { value: "14.300 m²", label: "Arazi" },
-    { value: "9", label: "Blok" },
-    { value: "72", label: "Seçkin Konut" },
-    { value: "197–333 m²", label: "Brüt Daire" },
+    {
+      value: "14.300 m²",
+      label: "Arazi",
+      desc: "Çekmeköy'ün orman dokusunun yanı başında, geniş peyzajlı yerleşim alanı.",
+    },
+    {
+      value: "9",
+      label: "Blok",
+      desc: "Butik ölçekli yerleşim; daha ferah bir site yaşamı, daha fazla mahremiyet.",
+    },
+    {
+      value: "72",
+      label: "Seçkin Konut",
+      desc: "Kalabalık projelerin yoğunluğundan ayrışan, daha seçici bir yaşam çevresi.",
+    },
+    {
+      value: "197–333 m²",
+      label: "Brüt Daire",
+      desc: "Günlük hayat düşünülerek planlanmış geniş 3+1 ve 4+1 seçenekleri.",
+    },
   ],
 } as const;
 

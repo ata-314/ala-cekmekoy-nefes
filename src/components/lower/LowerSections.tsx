@@ -9,7 +9,6 @@ import {
   brand,
   whyCekmekoy,
   info,
-  identity,
   editorial,
   galleryBelow,
   location,
@@ -40,26 +39,60 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
       const root = rootRef.current;
       if (!root) return;
 
-      /* Theme morph: wrapper bg follows the section occupying mid-viewport. */
+      /* Proje Bilgileri: pinned horizontal scrub. The whole train (giant
+         single-line title + stat cards) starts off-screen right and travels
+         left; cards enter from the right as the title exits. Pure scrub —
+         perfectly reversible — and the pin releases when the tail arrives. */
+      const hsec = root.querySelector<HTMLElement>("[data-stats-sec]");
+      const train = root.querySelector<HTMLElement>("[data-htrain]");
+      if (hsec && train) {
+        gsap.fromTo(
+          train,
+          { x: () => window.innerWidth },
+          {
+            // Release with the last card resting at the right edge — the pin
+            // lets go on a full composition, not an emptied screen.
+            x: () => -(train.scrollWidth - window.innerWidth),
+            ease: "none",
+            scrollTrigger: {
+              trigger: hsec,
+              start: "top top",
+              end: () => "+=" + Math.round(train.scrollWidth),
+              pin: true,
+              scrub: 0.6,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      }
+
+      /* Theme morph: wrapper bg follows the section occupying mid-viewport.
+         Driven by IntersectionObserver, NOT ScrollTrigger positions — the
+         pinned horizontal section inserts a large pin spacer, and IO reads
+         the real layout (pin included) so the dark theme holds through the
+         whole pin without recalculation headaches. */
       gsap.set(root, { backgroundColor: SNOW });
-      gsap.utils.toArray<HTMLElement>("[data-theme-sec]").forEach((sec) => {
-        gsap.set(sec, { backgroundColor: "transparent" });
-        const color = sec.dataset.bg === "dark" ? OBSIDIAN : SNOW;
-        ScrollTrigger.create({
-          trigger: sec,
-          start: "top 58%",
-          end: "bottom 58%",
-          onToggle: (self) => {
-            if (self.isActive)
-              gsap.to(root, {
-                backgroundColor: color,
-                duration: 1.1,
-                ease: "power1.inOut",
-                overwrite: "auto",
-              });
-          },
-        });
-      });
+      const themeSecs = gsap.utils.toArray<HTMLElement>("[data-theme-sec]");
+      themeSecs.forEach((sec) => gsap.set(sec, { backgroundColor: "transparent" }));
+      const themeIO = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const color =
+              (e.target as HTMLElement).dataset.bg === "dark" ? OBSIDIAN : SNOW;
+            gsap.to(root, {
+              backgroundColor: color,
+              duration: 1.1,
+              ease: "power1.inOut",
+              overwrite: "auto",
+            });
+          });
+        },
+        // A thin band around the viewport's middle: exactly one section wins.
+        { rootMargin: "-49% 0px -49% 0px" }
+      );
+      themeSecs.forEach((sec) => themeIO.observe(sec));
 
       /* Staggered reveals per section */
       gsap.utils.toArray<HTMLElement>("[data-lsec]").forEach((sec) => {
@@ -116,32 +149,6 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         );
       });
 
-      /* Brutalist stats: numerals punch up from their clip masks + marquee drift */
-      gsap.fromTo(
-        "[data-stat]",
-        { yPercent: 110 },
-        {
-          yPercent: 0,
-          duration: 0.9,
-          ease: "power4.out",
-          stagger: 0.1,
-          scrollTrigger: { trigger: "[data-stats-sec]", start: "top 62%" },
-        }
-      );
-      gsap.fromTo(
-        "[data-marquee]",
-        { xPercent: 4 },
-        {
-          xPercent: -22,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "[data-stats-sec]",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
 
       /* Full-bleed map: slow settle + vertical drift */
       gsap.fromTo(
@@ -161,6 +168,8 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
       );
 
       ScrollTrigger.refresh();
+
+      return () => themeIO.disconnect();
     },
     { scope: rootRef }
   );
@@ -249,48 +258,43 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         </div>
       </section>
 
-      {/* ---- 02 · Rakamlar — brutalist (dark) ---- */}
+      {/* ---- 02 · Proje Bilgileri — pinned horizontal scrub (dark) ---- */}
       <section
-        data-lsec
         data-theme-sec
         data-bg="dark"
         data-stats-sec
-        className="overflow-hidden bg-obsidian-950 py-24 text-snow sm:py-32"
+        aria-label={info.eyebrow}
+        className="overflow-hidden bg-obsidian-950 text-snow"
       >
-        {/* Outlined marquee */}
-        <div className="pointer-events-none select-none whitespace-nowrap" aria-hidden>
-          <p
-            data-marquee
-            className="font-sans text-[16vw] font-black uppercase leading-none tracking-[-0.03em] text-transparent sm:text-[11vw] [-webkit-text-stroke:1.5px_rgba(246,247,252,0.22)]"
+        <div className="relative flex h-[100svh] items-center overflow-hidden motion-reduce:h-auto motion-reduce:py-24">
+          <span className="absolute left-5 top-6 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/40 sm:left-8 sm:top-8">
+            {info.eyebrow}
+          </span>
+          <div
+            data-htrain
+            className="flex items-center gap-[12vw] will-change-transform motion-reduce:flex-wrap motion-reduce:gap-8 motion-reduce:px-5"
           >
-            {`${identity.shortName} — A'LÂ ÇEKMEKÖY — ${identity.shortName} — A'LÂ ÇEKMEKÖY — ${identity.shortName}`}
-          </p>
-        </div>
-
-        <div className="mx-auto mt-14 max-w-7xl border-y-[3px] border-snow px-0 sm:mt-20">
-          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+            <h2 className="whitespace-nowrap font-sans text-[15vw] font-black uppercase leading-none tracking-[-0.03em] text-snow sm:text-[11vw] motion-reduce:whitespace-normal motion-reduce:text-5xl">
+              A&apos;LÂ ÇEKMEKÖY NEFES
+            </h2>
             {info.stats.map((stat, i) => (
-              <div
+              <article
                 key={stat.label}
-                className={`relative px-6 py-10 sm:px-8 sm:py-14 ${i > 0 ? "border-t-2 border-snow/25 sm:border-t-0 sm:border-l-2" : ""}`}
+                className="w-[80vw] max-w-[400px] shrink-0 border-[2.5px] border-snow/85 bg-obsidian-900/50 p-7 sm:w-[400px] sm:p-9"
               >
-                <span className="absolute right-4 top-4 text-[0.6rem] font-bold tracking-[0.25em] text-snow/35">
+                <span className="text-[0.6rem] font-bold tracking-[0.25em] text-snow/40">
                   ({String(i + 1).padStart(2, "0")})
                 </span>
-                <div className="overflow-hidden">
-                  <dd
-                    data-stat
-                    className="font-sans text-5xl font-black leading-none tracking-[-0.04em] text-snow sm:text-6xl xl:text-7xl"
-                  >
-                    {stat.value}
-                  </dd>
-                </div>
-                <dt className="mt-4 text-[0.65rem] font-bold uppercase tracking-[0.35em] text-snow/55">
+                <p className="mt-6 font-sans text-5xl font-black leading-none tracking-[-0.04em] sm:text-6xl xl:text-7xl">
+                  {stat.value}
+                </p>
+                <p className="mt-3 text-[0.65rem] font-bold uppercase tracking-[0.35em] text-snow/55">
                   {stat.label}
-                </dt>
-              </div>
+                </p>
+                <p className="mt-4 text-sm leading-relaxed text-snow/65">{stat.desc}</p>
+              </article>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
