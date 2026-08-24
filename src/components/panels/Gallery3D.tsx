@@ -111,7 +111,7 @@ export default function Gallery3D() {
       <>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {gallery.items.map((item) => (
-            <button key={item.src} type="button" onClick={() => setLightbox(item)} className="glass-light overflow-hidden rounded-2xl p-1.5">
+            <button key={item.src} type="button" onClick={() => setLightbox(item)} className="overflow-hidden rounded-2xl border border-snow/25 bg-obsidian-900/45 p-1.5">
               <SmartImage src={item.src} alt={item.alt} className="aspect-[4/3] w-full rounded-xl" />
             </button>
           ))}
@@ -137,7 +137,7 @@ export default function Gallery3D() {
               type="button"
               onClick={() => setLightbox(item)}
               aria-label={`${item.alt} — büyüt`}
-              className="glass-light absolute left-0 top-0 w-[210px] cursor-zoom-in overflow-hidden rounded-2xl p-1.5 sm:w-[310px] lg:w-[350px]"
+              className="absolute left-0 top-0 w-[210px] cursor-zoom-in overflow-hidden rounded-2xl border border-snow/25 bg-obsidian-900/45 p-1.5 sm:w-[310px] lg:w-[350px]"
             >
               <SmartImage
                 src={item.src}

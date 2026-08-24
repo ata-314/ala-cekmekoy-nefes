@@ -193,7 +193,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
             <div
               data-marka-slot
-              className="aspect-[4/3] overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)] lg:aspect-auto"
+              className="aspect-[4/3] overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)] lg:aspect-auto lg:shadow-none"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -284,13 +284,15 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             data-htrain
             className="flex items-center gap-[12vw] will-change-transform motion-reduce:flex-wrap motion-reduce:gap-8 motion-reduce:px-5"
           >
-            <h2 className="whitespace-nowrap font-sans text-[15vw] font-black uppercase leading-none tracking-[-0.03em] text-snow sm:text-[11vw] motion-reduce:whitespace-normal motion-reduce:text-5xl">
-              A&apos;LÂ ÇEKMEKÖY NEFES
+            <h2 className="whitespace-nowrap font-display text-[14vw] font-medium leading-none text-snow sm:text-[10vw] motion-reduce:whitespace-normal motion-reduce:text-5xl">
+              <em className="mr-[2vw] italic">A&apos;lâ</em>
+              <span className="tracking-[0.06em]">ÇEKMEKÖY</span>
+              <span className="ml-[3vw] tracking-[0.3em] text-snow/85">NEFES</span>
             </h2>
             {info.stats.map((stat, i) => (
               <article
                 key={stat.label}
-                className="glass relative w-[80vw] max-w-[420px] shrink-0 overflow-hidden rounded-[26px] bg-obsidian-900/45 p-8 sm:w-[420px] sm:p-10"
+                className="group relative flex h-[330px] w-[80vw] max-w-[420px] shrink-0 flex-col overflow-hidden rounded-[26px] border border-snow/15 bg-obsidian-900/80 p-8 transition-all duration-500 ease-out hover:-translate-y-2 hover:border-snow/45 hover:bg-obsidian-800 hover:shadow-[0_34px_70px_-24px_rgba(0,0,10,0.65)] sm:h-[380px] sm:w-[420px] sm:p-10"
               >
                 {/* top hairline accent */}
                 <span
@@ -305,11 +307,11 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
                     {stat.label}
                   </span>
                 </div>
-                <p className="mt-10 bg-gradient-to-b from-white to-mist-400 bg-clip-text font-sans text-6xl font-black leading-none tracking-[-0.04em] text-transparent sm:text-7xl">
+                <p className="mt-9 bg-gradient-to-b from-white to-mist-400 bg-clip-text font-sans text-6xl font-black leading-none tracking-[-0.04em] text-transparent transition-transform duration-500 group-hover:scale-[1.04] sm:text-7xl [transform-origin:left_center]">
                   {stat.value}
                 </p>
-                <span aria-hidden className="mt-8 block h-px w-full bg-snow/12" />
-                <p className="mt-5 text-sm leading-relaxed text-snow/65">{stat.desc}</p>
+                <span aria-hidden className="mt-auto block h-px w-full bg-snow/12 transition-colors duration-500 group-hover:bg-snow/30" />
+                <p className="mt-5 text-sm leading-relaxed text-snow/65 transition-colors duration-500 group-hover:text-snow/85">{stat.desc}</p>
               </article>
             ))}
           </div>
@@ -385,9 +387,12 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
       </section>
 
       {/* ---- 05 · Konum — full-bleed map (light) ---- */}
-      <section id="konum" data-lsec data-theme-sec data-bg="dark" className="relative overflow-hidden bg-obsidian-950 text-snow">
+      <section id="konum" data-lsec data-theme-sec data-bg="light" className="relative overflow-hidden bg-snow text-snow">
         {/* Map covers the whole section background */}
-        <div className="absolute inset-0" aria-hidden>
+        <div
+          className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]"
+          aria-hidden
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             data-map
@@ -397,12 +402,11 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             decoding="async"
             className="h-full w-full object-cover will-change-transform"
           />
-          {/* Cinematic obsidian edges: the light map fades from/to the dark
-              neighbouring sections instead of cutting hard */}
-          <div className="absolute inset-0 bg-obsidian-950/[0.14]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-obsidian-950 via-obsidian-950/55 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-obsidian-950 via-obsidian-950/55 to-transparent" />
-          <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-obsidian-950/70 to-transparent" />
+          {/* The map fades to TRANSPARENT at its edges (CSS mask), so it
+              blends into whatever the morphing page background currently is —
+              dark on the way in, light once the section owns the viewport.
+              Flawless both directions. */}
+          <div className="absolute inset-0 bg-obsidian-950/[0.05]" />
         </div>
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-5 py-24 sm:px-8 sm:py-32">

@@ -199,6 +199,12 @@ function AnimatedStage({
         const on = swapped && lgQ();
         if (slotImg) gsap.set(slotImg, { autoAlpha: on || !lgQ() ? 1 : 0 });
         if (flip && on) gsap.set(flip, { autoAlpha: 0 });
+        // The slot stays completely invisible (no box, no shadow) until the
+        // frame lands — then it inherits the exact same shadow, seamlessly.
+        if (slot && lgQ())
+          gsap.set(slot, {
+            boxShadow: on ? "0 40px 90px -30px rgba(0,1,46,0.4)" : "none",
+          });
       };
       applySwap();
       ScrollTrigger.create({
