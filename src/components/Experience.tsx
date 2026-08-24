@@ -133,15 +133,42 @@ function AnimatedStage({
       };
 
       // Choreography over a 100-unit scrubbed timeline (≈ scroll progress %).
-      phaseOut("intro", 6);
-      phaseIn("info", 16);
-      phaseOut("info", 34);
-      phaseIn("advantages", 44);
-      phaseOut("advantages", 62);
-      phaseIn("gallery", 71);
+      // The last ~15 units belong to the hero→section hand-off: the video
+      // holds its final frame (ScrollVideo endFraction 0.85) while the
+      // full-screen frame shrinks into a rounded card over the snow ground,
+      // drifts up, and the page releases into the Marka section — one
+      // continuous, fully reversible scrub.
+      phaseOut("intro", 5);
+      phaseIn("info", 13);
+      phaseOut("info", 26);
+      phaseIn("advantages", 34);
+      phaseOut("advantages", 47);
+      phaseIn("gallery", 54);
       // (The 3D carousel drives its own motion — no scroll pan here.)
-      phaseOut("gallery", 84);
-      phaseIn("closing", 92);
+      phaseOut("gallery", 65);
+      phaseIn("closing", 71);
+      phaseOut("closing", 81);
+      tl.to(
+        "[data-video-frame]",
+        {
+          scale: () => (window.innerWidth < 640 ? 0.86 : 0.78),
+          borderRadius: 28,
+          boxShadow: "0 40px 90px -30px rgba(0,1,46,0.4)",
+          duration: 9,
+          ease: "power1.inOut",
+        },
+        85
+      )
+        .to(
+          "[data-video-frame]",
+          {
+            y: () => -window.innerHeight * 0.07,
+            duration: 6,
+            ease: "power1.out",
+          },
+          94
+        )
+        .to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units
 
       if (progressRef.current) {
@@ -165,9 +192,15 @@ function AnimatedStage({
   );
 
   return (
-    <div ref={trackRef} className="relative h-[620vh]">
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <ScrollVideo trackRef={trackRef} />
+    <div ref={trackRef} className="relative h-[780vh]">
+      {/* Snow ground shows around the video frame as it shrinks into a card */}
+      <div className="sticky top-0 h-screen overflow-hidden bg-snow">
+        <div
+          data-video-frame
+          className="absolute inset-0 overflow-hidden will-change-transform"
+        >
+          <ScrollVideo trackRef={trackRef} endFraction={0.85} />
+        </div>
 
         {/* Each phase clears the fixed form on desktop (absolute children ignore parent padding) */}
         <div className="pointer-events-none absolute inset-0 z-10">
@@ -191,7 +224,7 @@ function AnimatedStage({
         </div>
 
         {/* Scroll progress hairline */}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-[2px] bg-snow/10">
+        <div data-progress-bar className="absolute inset-x-0 bottom-0 z-20 h-[2px] bg-snow/10">
           <div
             ref={progressRef}
             className="h-full origin-left bg-accent"

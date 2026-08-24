@@ -21,8 +21,13 @@ import { assets, identity } from "@/content/project";
  */
 export default function ScrollVideo({
   trackRef,
+  endFraction = 1,
 }: {
   trackRef: RefObject<HTMLDivElement | null>;
+  /** Fraction of the track's scroll at which the video reaches its last
+      frame — it then holds that frame for the remaining scroll (used by
+      the hero→section hand-off, which owns the tail of the track). */
+  endFraction?: number;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -58,7 +63,9 @@ export default function ScrollVideo({
           scrollTrigger: {
             trigger: track,
             start: "top top",
-            end: "bottom bottom",
+            end: () =>
+              "+=" +
+              (track.offsetHeight - window.innerHeight) * endFraction,
             scrub: 1.2, // lag smoothing → fluid, controlled frame advance
           },
         }
@@ -90,7 +97,7 @@ export default function ScrollVideo({
       gsap.killTweensOf(wrap);
       gsap.set(wrap, { clearProps: "transform" });
     };
-  }, [trackRef]);
+  }, [trackRef, endFraction]);
 
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden>
