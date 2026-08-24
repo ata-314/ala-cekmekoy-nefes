@@ -52,12 +52,16 @@ body {
    backdrop-filter combined with GSAP transform/opacity on the same node
    flickers and "pops" in Chrome/Safari. The pseudo layer + translateZ(0)
    keeps the frost stable while the card moves or fades. ---- */
-.glass,
-.glass-light,
-.glass-frost {
-  position: relative;
-  isolation: isolate;
-  transform: translateZ(0);
+/* Inside @layer utilities + :where(): un-layered rules would beat
+   Tailwind's layered `absolute` utility regardless of specificity (cascade
+   layers trump specificity), which flattened the 3D gallery ring. Same
+   layer + zero specificity lets positioning utilities win again. */
+@layer utilities {
+  :where(.glass, .glass-light, .glass-frost) {
+    position: relative;
+    isolation: isolate;
+    transform: translateZ(0);
+  }
 }
 .glass::before,
 .glass-light::before,
@@ -115,6 +119,13 @@ body {
 .glass-frost::before {
   -webkit-backdrop-filter: blur(28px) saturate(1.5);
   backdrop-filter: blur(28px) saturate(1.5);
+}
+
+/* Hero phases: backdrop blur ignores ancestor opacity, so a fading card's
+   frost used to pop in at full strength. The phase timeline drives --frost
+   in sync with the fade instead. */
+[data-phase] :is(.glass, .glass-light)::before {
+  opacity: var(--frost, 1);
 }
 
 /* Light-section card (obsidian on snow) */

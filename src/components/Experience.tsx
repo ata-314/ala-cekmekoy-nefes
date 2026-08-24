@@ -111,11 +111,13 @@ function AnimatedStage({
         },
       });
 
+      // --frost rides along with the fade: backdrop blur ignores ancestor
+      // opacity, so without this the glass "pops" in at full strength.
       const phaseIn = (name: string, at: number) => {
         tl.fromTo(
           `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: 70 },
-          { autoAlpha: 1, y: 0, duration: 6 },
+          { autoAlpha: 0, y: 70, "--frost": 0 },
+          { autoAlpha: 1, y: 0, "--frost": 1, duration: 6 },
           at
         ).fromTo(
           `[data-phase="${name}"] [data-reveal]`,
@@ -127,7 +129,7 @@ function AnimatedStage({
       const phaseOut = (name: string, at: number) => {
         tl.to(
           `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: -60, duration: 5, ease: "power2.in" },
+          { autoAlpha: 0, y: -60, "--frost": 0, duration: 5, ease: "power2.in" },
           at
         );
       };
@@ -148,10 +150,13 @@ function AnimatedStage({
       phaseOut("gallery", 65);
       phaseIn("closing", 71);
       phaseOut("closing", 81);
+      // The frame shrinks and DOCKS LEFT, handing off to the Marka section's
+      // left-column image (the same final video frame) — image left, text
+      // right. On mobile (single column) it stays centered.
       tl.to(
         "[data-video-frame]",
         {
-          scale: () => (window.innerWidth < 640 ? 0.86 : 0.78),
+          scale: () => (window.innerWidth < 1024 ? 0.84 : 0.5),
           borderRadius: 28,
           boxShadow: "0 40px 90px -30px rgba(0,1,46,0.4)",
           duration: 9,
@@ -162,11 +167,12 @@ function AnimatedStage({
         .to(
           "[data-video-frame]",
           {
-            y: () => -window.innerHeight * 0.07,
-            duration: 6,
-            ease: "power1.out",
+            x: () => (window.innerWidth < 1024 ? 0 : -window.innerWidth * 0.24),
+            y: () => -window.innerHeight * 0.04,
+            duration: 7,
+            ease: "power1.inOut",
           },
-          94
+          92
         )
         .to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units

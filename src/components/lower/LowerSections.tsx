@@ -107,7 +107,12 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             duration: 0.9,
             ease: "power3.out",
             stagger: 0.1,
-            scrollTrigger: { trigger: sec, start: "top 80%" },
+            scrollTrigger: {
+              trigger: sec,
+              start: "top 80%",
+              end: "bottom 22%",
+              toggleActions: "play reverse play reverse",
+            },
           }
         );
       });
@@ -184,34 +189,35 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             {brand.eyebrow}
             <span className="h-px flex-1 bg-obsidian-950/15" />
           </div>
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
-            <h2 data-lreveal className="font-display text-4xl leading-[1.12] sm:text-5xl lg:text-6xl">
-              {brand.heading.split("\n").map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </h2>
-            <div className="flex flex-col gap-5 lg:pt-4">
-              {brand.paragraphs.map((par) => (
-                <p key={par.slice(0, 24)} data-lreveal className="text-[0.95rem] leading-relaxed text-obsidian-950/75">
-                  {par}
-                </p>
-              ))}
+          {/* Image LEFT (the hero video lands on this exact frame), text RIGHT */}
+          <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+            <div data-lreveal className="overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                data-parallax
+                src={assets.videoEndFrame}
+                alt={brand.mediaAlt}
+                loading="lazy"
+                decoding="async"
+                className="aspect-[4/3] w-full scale-[1.16] object-cover lg:aspect-[16/12]"
+              />
             </div>
-          </div>
-
-          {/* The hero video "lands" here: same frame, same card language */}
-          <div data-lreveal className="mt-14 overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)] sm:mt-20">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              data-parallax
-              src={assets.videoEndFrame}
-              alt={brand.mediaAlt}
-              loading="lazy"
-              decoding="async"
-              className="aspect-[16/10] w-full scale-[1.16] object-cover sm:aspect-[21/9]"
-            />
+            <div>
+              <h2 data-lreveal className="font-display text-4xl leading-[1.12] sm:text-5xl">
+                {brand.heading.split("\n").map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </h2>
+              <div className="mt-7 flex flex-col gap-5">
+                {brand.paragraphs.map((par) => (
+                  <p key={par.slice(0, 24)} data-lreveal className="text-[0.95rem] leading-relaxed text-obsidian-950/75">
+                    {par}
+                  </p>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Icon strip — the project's four pillars */}
@@ -267,9 +273,11 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         className="overflow-hidden bg-obsidian-950 text-snow"
       >
         <div className="relative flex h-[100svh] items-center overflow-hidden motion-reduce:h-auto motion-reduce:py-24">
-          <span className="absolute left-5 top-6 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/40 sm:left-8 sm:top-8">
+          <div className="absolute left-5 top-24 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/45 sm:left-8 sm:top-28">
+            <span className="rounded-full border border-snow/25 px-2 py-1">02</span>
             {info.eyebrow}
-          </span>
+            <span className="h-px w-16 bg-snow/20 sm:w-28" />
+          </div>
           <div
             data-htrain
             className="flex items-center gap-[12vw] will-change-transform motion-reduce:flex-wrap motion-reduce:gap-8 motion-reduce:px-5"
@@ -280,18 +288,26 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             {info.stats.map((stat, i) => (
               <article
                 key={stat.label}
-                className="w-[80vw] max-w-[400px] shrink-0 border-[2.5px] border-snow/85 bg-obsidian-900/50 p-7 sm:w-[400px] sm:p-9"
+                className="glass relative w-[80vw] max-w-[420px] shrink-0 overflow-hidden rounded-[26px] bg-obsidian-900/45 p-8 sm:w-[420px] sm:p-10"
               >
-                <span className="text-[0.6rem] font-bold tracking-[0.25em] text-snow/40">
-                  ({String(i + 1).padStart(2, "0")})
-                </span>
-                <p className="mt-6 font-sans text-5xl font-black leading-none tracking-[-0.04em] sm:text-6xl xl:text-7xl">
+                {/* top hairline accent */}
+                <span
+                  aria-hidden
+                  className="absolute inset-x-8 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-snow/70 to-transparent"
+                />
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full border border-snow/25 px-3 py-1 text-[0.6rem] font-bold tracking-[0.25em] text-snow/70">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-[0.6rem] font-bold uppercase tracking-[0.35em] text-snow/45">
+                    {stat.label}
+                  </span>
+                </div>
+                <p className="mt-10 bg-gradient-to-b from-white to-mist-400 bg-clip-text font-sans text-6xl font-black leading-none tracking-[-0.04em] text-transparent sm:text-7xl">
                   {stat.value}
                 </p>
-                <p className="mt-3 text-[0.65rem] font-bold uppercase tracking-[0.35em] text-snow/55">
-                  {stat.label}
-                </p>
-                <p className="mt-4 text-sm leading-relaxed text-snow/65">{stat.desc}</p>
+                <span aria-hidden className="mt-8 block h-px w-full bg-snow/12" />
+                <p className="mt-5 text-sm leading-relaxed text-snow/65">{stat.desc}</p>
               </article>
             ))}
           </div>
@@ -367,7 +383,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
       </section>
 
       {/* ---- 05 · Konum — full-bleed map (light) ---- */}
-      <section id="konum" data-lsec data-theme-sec data-bg="light" className="relative overflow-hidden bg-snow text-obsidian-950">
+      <section id="konum" data-lsec data-theme-sec data-bg="dark" className="relative overflow-hidden bg-obsidian-950 text-snow">
         {/* Map covers the whole section background */}
         <div className="absolute inset-0" aria-hidden>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -379,18 +395,19 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             decoding="async"
             className="h-full w-full object-cover will-change-transform"
           />
-          {/* Corporate wash so the light map sits in the identity, not on top of it */}
-          <div className="absolute inset-0 bg-obsidian-950/[0.06]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-snow/80 via-snow/20 to-transparent" />
-          <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-snow to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-snow to-transparent" />
+          {/* Cinematic obsidian edges: the light map fades from/to the dark
+              neighbouring sections instead of cutting hard */}
+          <div className="absolute inset-0 bg-obsidian-950/[0.14]" />
+          <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-obsidian-950 via-obsidian-950/55 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-obsidian-950 via-obsidian-950/55 to-transparent" />
+          <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-obsidian-950/70 to-transparent" />
         </div>
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-5 py-24 sm:px-8 sm:py-32">
           <div data-lreveal className="w-full max-w-md">
-            <div className="glass-frost rounded-[28px] p-7 text-obsidian-950 sm:p-9">
-              <div className="mb-6 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-obsidian-950/50">
-                <span className="border border-obsidian-950/25 px-2 py-1">04</span>
+            <div className="glass rounded-[28px] bg-obsidian-900/55 p-7 text-snow sm:p-9">
+              <div className="mb-6 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/50">
+                <span className="rounded-full border border-snow/30 px-2 py-1">04</span>
                 {location.eyebrow}
               </div>
               <h2 className="font-display text-3xl leading-[1.15] sm:text-4xl">
@@ -400,15 +417,15 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
                   </span>
                 ))}
               </h2>
-              <p className="mt-5 text-sm leading-relaxed text-obsidian-950/70">{location.body}</p>
+              <p className="mt-5 text-sm leading-relaxed text-snow/70">{location.body}</p>
               <ul className="mt-7">
                 {location.pois.map((poi) => (
                   <li
                     key={poi.name}
-                    className="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-obsidian-950/10 py-3 transition-colors duration-300 hover:border-obsidian-950/40"
+                    className="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-snow/12 py-3 transition-colors duration-300 hover:border-snow/45"
                   >
                     <span className="text-[0.85rem] font-semibold">{poi.name}</span>
-                    <span className="text-[0.7rem] text-obsidian-950/55">{poi.detail}</span>
+                    <span className="text-[0.7rem] text-snow/55">{poi.detail}</span>
                   </li>
                 ))}
               </ul>

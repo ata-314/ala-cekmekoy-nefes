@@ -90,67 +90,63 @@ export default function Header({ onContact }: { onContact: () => void }) {
 
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-40">
-        {/* Full-width frosted bar — the menu owns the whole top strip */}
-        <div className="glass rounded-none border-x-0 border-t-0 bg-obsidian-950/40">
-          {/* Page progress hairline */}
-          <div aria-hidden className="absolute inset-x-0 top-0 h-[2.5px] bg-snow/10">
-            <div
-              ref={progressRef}
-              className="h-full origin-left bg-snow/80"
-              style={{ transform: "scaleX(0)" }}
-            />
-          </div>
+      {/* Page progress hairline — pinned to the very top edge */}
+      <div aria-hidden className="fixed inset-x-0 top-0 z-50 h-[2.5px] bg-snow/10">
+        <div
+          ref={progressRef}
+          className="h-full origin-left bg-snow/80"
+          style={{ transform: "scaleX(0)" }}
+        />
+      </div>
 
-          <div className="grid h-[72px] grid-cols-[1fr_auto] items-center px-5 sm:h-20 sm:px-8 md:grid-cols-[1fr_auto_1fr]">
-            <button
-              type="button"
-              onClick={goTop}
-              aria-label="Başa dön"
-              className="cursor-pointer justify-self-start"
-            >
-              <Logo className="h-11 sm:h-12" />
-            </button>
+      <header className="fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-5">
+        {/* Apple-style floating pill: soft radius, centered, frosted */}
+        <div className="glass flex items-center gap-2 rounded-full bg-obsidian-950/35 py-2 pl-5 pr-2 sm:gap-4 sm:pl-6">
+          <button
+            type="button"
+            onClick={goTop}
+            aria-label="Başa dön"
+            className="cursor-pointer"
+          >
+            <Logo className="h-9 sm:h-10" />
+          </button>
 
-            {/* Centered desktop nav */}
-            <nav
-              aria-label="Site menüsü"
-              className="hidden items-center gap-1 justify-self-center md:flex"
-            >
-              {nav.items.map((item) => (
-                <button
-                  key={item.label}
-                  type="button"
-                  onClick={() => go(item.anchor)}
-                  aria-current={active === item.anchor ? "true" : undefined}
-                  className={itemClass(item.anchor)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
+          <span aria-hidden className="hidden h-6 w-px bg-snow/15 md:block" />
 
-            <div className="hidden justify-self-end md:block">
+          {/* Desktop nav */}
+          <nav aria-label="Site menüsü" className="hidden items-center gap-0.5 md:flex">
+            {nav.items.map((item) => (
               <button
+                key={item.label}
                 type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  onContact();
-                }}
-                className="cta rounded-full bg-accent px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950"
+                onClick={() => go(item.anchor)}
+                aria-current={active === item.anchor ? "true" : undefined}
+                className={itemClass(item.anchor)}
               >
-                {nav.contact}
+                {item.label}
               </button>
-            </div>
+            ))}
+          </nav>
 
-            {/* Mobile hamburger */}
-            <button
-              type="button"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
-              aria-expanded={menuOpen}
-              className="flex h-11 w-11 flex-col items-center justify-center gap-[5px] justify-self-end rounded-full border border-snow/15 md:hidden"
-            >
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              onContact();
+            }}
+            className="cta hidden rounded-full bg-accent px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950 md:block"
+          >
+            {nav.contact}
+          </button>
+
+          {/* Mobile hamburger */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+            aria-expanded={menuOpen}
+            className="flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-full border border-snow/15 md:hidden"
+          >
             <span
               className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
             />
@@ -160,8 +156,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
             <span
               className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
             />
-            </button>
-          </div>
+          </button>
         </div>
 
         {/* Mobile dropdown */}
@@ -169,7 +164,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
           {menuOpen && (
             <motion.nav
               aria-label="Site menüsü"
-              className="glass mx-4 mt-2 flex flex-col overflow-hidden rounded-2xl bg-obsidian-900/70 p-2 md:hidden"
+              className="glass absolute left-1/2 top-full mt-2 flex w-[calc(100vw-2.5rem)] max-w-sm -translate-x-1/2 flex-col overflow-hidden rounded-3xl bg-obsidian-900/70 p-2 md:hidden"
               initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.98 }}
