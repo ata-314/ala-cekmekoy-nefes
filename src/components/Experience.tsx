@@ -112,25 +112,15 @@ function AnimatedStage({
         },
       });
 
+      // Glass panels never animate: fading/translating an element that owns
+      // a backdrop-filter forces per-frame blur repaints — the stutter and
+      // the "late" feel. Phases now switch instantly at their scrub marks,
+      // arriving fully frosted; reversal is equally instant.
       const phaseIn = (name: string, at: number) => {
-        tl.fromTo(
-          `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: 70 },
-          { autoAlpha: 1, y: 0, duration: 6 },
-          at
-        ).fromTo(
-          `[data-phase="${name}"] [data-reveal]`,
-          { autoAlpha: 0, y: 34 },
-          { autoAlpha: 1, y: 0, duration: 5, stagger: 0.9 },
-          at + 1
-        );
+        tl.set(`[data-phase="${name}"]`, { autoAlpha: 1 }, at);
       };
       const phaseOut = (name: string, at: number) => {
-        tl.to(
-          `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: -60, duration: 5, ease: "power2.in" },
-          at
-        );
+        tl.set(`[data-phase="${name}"]`, { autoAlpha: 0 }, at);
       };
 
       // Choreography over a 100-unit scrubbed timeline (≈ scroll progress %).
