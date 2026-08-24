@@ -119,8 +119,6 @@ export default function ScrollVideo({
           />
         )}
       </div>
-      {/* Light legibility scrim — kept subtle so the footage stays vivid */}
-      <div className="absolute inset-0 bg-gradient-to-b from-obsidian-950/30 via-transparent to-obsidian-950/40" />
     </div>
   );
 }

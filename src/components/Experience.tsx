@@ -112,13 +112,11 @@ function AnimatedStage({
         },
       });
 
-      // --frost rides along with the fade: backdrop blur ignores ancestor
-      // opacity, so without this the glass "pops" in at full strength.
       const phaseIn = (name: string, at: number) => {
         tl.fromTo(
           `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: 70, "--frost": 0 },
-          { autoAlpha: 1, y: 0, "--frost": 1, duration: 6 },
+          { autoAlpha: 0, y: 70 },
+          { autoAlpha: 1, y: 0, duration: 6 },
           at
         ).fromTo(
           `[data-phase="${name}"] [data-reveal]`,
@@ -130,7 +128,7 @@ function AnimatedStage({
       const phaseOut = (name: string, at: number) => {
         tl.to(
           `[data-phase="${name}"]`,
-          { autoAlpha: 0, y: -60, "--frost": 0, duration: 5, ease: "power2.in" },
+          { autoAlpha: 0, y: -60, duration: 5, ease: "power2.in" },
           at
         );
       };
