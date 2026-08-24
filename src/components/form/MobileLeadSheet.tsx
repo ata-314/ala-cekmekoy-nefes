@@ -44,7 +44,7 @@ export default function MobileLeadSheet({
             <motion.button
               type="button"
               aria-label="Formu kapat"
-              className="fixed inset-0 z-40 bg-obsidian-950/60 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-obsidian-950/70"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -56,7 +56,7 @@ export default function MobileLeadSheet({
               aria-modal="true"
               aria-label={form.title}
               tabIndex={-1}
-              className="glass fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl p-6 pb-10 outline-none"
+              className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-snow/15 bg-obsidian-900 p-6 pb-10 shadow-[0_-30px_80px_-20px_rgba(0,0,20,0.7)] outline-none"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}

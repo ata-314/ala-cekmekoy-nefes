@@ -167,6 +167,9 @@ function AnimatedStage({
         else slot.style.removeProperty("aspect-ratio");
       };
       setRatio();
+      ScrollTrigger.addEventListener("refreshInit", () => {
+        if (slotImg && !lgQ()) gsap.set(slotImg, { autoAlpha: 1 });
+      });
       ScrollTrigger.addEventListener("refreshInit", setRatio);
 
       const slotTarget = () => {
@@ -182,32 +185,14 @@ function AnimatedStage({
         };
       };
 
-      let swapped = false;
-      const applySwap = () => {
-        const on = swapped && lgQ();
-        if (slotImg) gsap.set(slotImg, { autoAlpha: on || !lgQ() ? 1 : 0 });
-        if (flip && on) gsap.set(flip, { autoAlpha: 0 });
-        // The slot stays completely invisible (no box, no shadow) until the
-        // frame lands — then it inherits the exact same shadow, seamlessly.
-        if (slot && lgQ())
-          gsap.set(slot, {
-            boxShadow: on ? "0 40px 90px -30px rgba(0,1,46,0.4)" : "none",
-          });
+      // Visibility of clone vs slot image is owned by the TIMELINE alone —
+      // a separate ScrollTrigger swap raced the lagging scrub on fast jumps
+      // (menu anchors) and left the clone stranded over later sections.
+      const applyInit = () => {
+        if (slotImg) gsap.set(slotImg, { autoAlpha: lgQ() ? 0 : 1 });
+        if (slot) gsap.set(slot, { boxShadow: lgQ() ? "none" : "" });
       };
-      applySwap();
-      ScrollTrigger.create({
-        trigger: track,
-        start: "bottom bottom",
-        onEnter: () => {
-          swapped = true;
-          applySwap();
-        },
-        onLeaveBack: () => {
-          swapped = false;
-          applySwap();
-          if (flip && lgQ()) gsap.set(flip, { autoAlpha: 1 });
-        },
-      });
+      applyInit();
 
       // Mobile: stage frame shrinks in place and flows down (no swap).
       tl.to(
@@ -252,6 +237,20 @@ function AnimatedStage({
           );
       }
       tl.to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
+      // Land: clone hands over to the in-flow slot image (and its shadow)
+      // right at the end of the scrub — fully reversible, race-free.
+      if (flip) {
+        tl.set(flip, { autoAlpha: 0 }, 99.6)
+          .set(slotImg, { autoAlpha: () => (lgQ() ? 1 : 1) }, 99.6)
+          .set(
+            slot,
+            {
+              boxShadow: () =>
+                lgQ() ? "0 40px 90px -30px rgba(0,1,46,0.4)" : "",
+            },
+            99.6
+          );
+      }
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units
 
       if (progressRef.current) {

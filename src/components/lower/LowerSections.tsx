@@ -409,35 +409,8 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
           <div className="absolute inset-0 bg-obsidian-950/[0.05]" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-5 py-24 sm:px-8 sm:py-32">
-          <div data-lreveal className="w-full max-w-md">
-            <div className="glass rounded-[28px] bg-obsidian-900/55 p-7 text-snow sm:p-9">
-              <div className="mb-6 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/50">
-                <span className="rounded-full border border-snow/30 px-2 py-1">04</span>
-                {location.eyebrow}
-              </div>
-              <h2 className="font-display text-3xl leading-[1.15] sm:text-4xl">
-                {location.heading.split("\n").map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </h2>
-              <p className="mt-5 text-sm leading-relaxed text-snow/70">{location.body}</p>
-              <ul className="mt-7">
-                {location.pois.map((poi) => (
-                  <li
-                    key={poi.name}
-                    className="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-snow/12 py-3 transition-colors duration-300 hover:border-snow/45"
-                  >
-                    <span className="text-[0.85rem] font-semibold">{poi.name}</span>
-                    <span className="text-[0.7rem] text-snow/55">{poi.detail}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
+        {/* Full-bleed map only — no overlay card (human directive 2026-08-24) */}
+        <div className="relative min-h-[100svh]" />
       </section>
 
       {/* ---- 06 · CTA band (dark) ---- */}

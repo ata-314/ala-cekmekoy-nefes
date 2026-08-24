@@ -82,7 +82,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
   };
 
   const itemClass = (anchor: string) =>
-    `rounded-full px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] transition-colors duration-300 ${
+    `rounded-full px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
       active === anchor
         ? "bg-snow text-obsidian-950"
         : "text-snow/75 hover:bg-snow/10 hover:text-snow"
@@ -101,20 +101,20 @@ export default function Header({ onContact }: { onContact: () => void }) {
 
       <header className="fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-5">
         {/* Apple-style floating pill: soft radius, centered, frosted */}
-        <div className="glass flex items-center gap-2 rounded-full bg-obsidian-950/35 py-2 pl-5 pr-2 sm:gap-4 sm:pl-6">
+        <div className="glass flex items-center gap-3 rounded-full bg-obsidian-950/35 py-2.5 pl-6 pr-2.5 sm:gap-6 sm:pl-8">
           <button
             type="button"
             onClick={goTop}
             aria-label="Başa dön"
             className="cursor-pointer"
           >
-            <Logo className="h-9 sm:h-10" />
+            <Logo className="h-11 sm:h-[3.25rem]" />
           </button>
 
           <span aria-hidden className="hidden h-6 w-px bg-snow/15 md:block" />
 
           {/* Desktop nav */}
-          <nav aria-label="Site menüsü" className="hidden items-center gap-0.5 md:flex">
+          <nav aria-label="Site menüsü" className="hidden items-center gap-1.5 md:flex">
             {nav.items.map((item) => (
               <button
                 key={item.label}
@@ -134,7 +134,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
               setMenuOpen(false);
               onContact();
             }}
-            className="cta hidden rounded-full bg-accent px-5 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950 md:block"
+            className="cta hidden rounded-full bg-accent px-6 py-3 text-[0.72rem] font-bold uppercase tracking-[0.2em] text-obsidian-950 md:block"
           >
             {nav.contact}
           </button>
@@ -164,7 +164,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
           {menuOpen && (
             <motion.nav
               aria-label="Site menüsü"
-              className="glass absolute left-1/2 top-full mt-2 flex w-[calc(100vw-2.5rem)] max-w-sm -translate-x-1/2 flex-col overflow-hidden rounded-3xl bg-obsidian-900/70 p-2 md:hidden"
+              className="absolute left-1/2 top-full mt-2 flex w-[calc(100vw-2.5rem)] max-w-sm -translate-x-1/2 flex-col overflow-hidden rounded-3xl border border-snow/15 bg-obsidian-900 p-2 shadow-[0_30px_70px_-20px_rgba(0,0,20,0.7)] md:hidden"
               initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.98 }}
