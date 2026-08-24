@@ -182,9 +182,9 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
   return (
     <div id="lower" ref={rootRef} className="relative z-20">
       {/* ---- 01 · Marka (light) ---- */}
-      <section id="marka" data-lsec data-theme-sec data-bg="light" className="bg-snow px-5 py-24 text-obsidian-950 sm:px-8 sm:py-32">
+      <section id="marka" data-lsec data-theme-sec data-bg="light" className="bg-snow px-5 pb-24 pt-10 text-obsidian-950 sm:px-8 sm:pb-32 sm:pt-14">
         <div className="mx-auto max-w-6xl">
-          <div data-lreveal className="mb-12 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-obsidian-950/45">
+          <div data-lreveal className="mb-8 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-obsidian-950/45">
             <span className="border border-obsidian-950/25 px-2 py-1">01</span>
             {brand.eyebrow}
             <span className="h-px flex-1 bg-obsidian-950/15" />
@@ -199,7 +199,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
                 alt={brand.mediaAlt}
                 loading="lazy"
                 decoding="async"
-                className="aspect-[4/3] w-full scale-[1.16] object-cover lg:aspect-[16/12]"
+                className="aspect-[4/3] w-full scale-[1.16] object-cover lg:aspect-[16/10]"
               />
             </div>
             <div>

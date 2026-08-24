@@ -150,13 +150,15 @@ function AnimatedStage({
       phaseOut("gallery", 65);
       phaseIn("closing", 71);
       phaseOut("closing", 81);
-      // The frame shrinks and DOCKS LEFT, handing off to the Marka section's
-      // left-column image (the same final video frame) — image left, text
-      // right. On mobile (single column) it stays centered.
+      // The frame shrinks in place, then FLOWS DOWNWARD into section two:
+      // by the release point it sits low in the viewport at the size/x of the
+      // Marka section's opening image (the same final video frame), so the
+      // natural scroll carries it out while the identical section image
+      // follows it in — the card reads as passing into the section.
       tl.to(
         "[data-video-frame]",
         {
-          scale: () => (window.innerWidth < 1024 ? 0.84 : 0.5),
+          scale: () => (window.innerWidth < 1024 ? 0.86 : 0.42),
           borderRadius: 28,
           boxShadow: "0 40px 90px -30px rgba(0,1,46,0.4)",
           duration: 9,
@@ -167,12 +169,12 @@ function AnimatedStage({
         .to(
           "[data-video-frame]",
           {
-            x: () => (window.innerWidth < 1024 ? 0 : -window.innerWidth * 0.24),
-            y: () => -window.innerHeight * 0.04,
+            x: () => (window.innerWidth < 1024 ? 0 : -window.innerWidth * 0.19),
+            y: () => window.innerHeight * (window.innerWidth < 1024 ? 0.1 : 0.16),
             duration: 7,
             ease: "power1.inOut",
           },
-          92
+          93
         )
         .to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units
