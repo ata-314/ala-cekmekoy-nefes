@@ -182,7 +182,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
   return (
     <div id="lower" ref={rootRef} className="relative z-20">
       {/* ---- 01 · Marka (light) ---- */}
-      <section id="marka" data-lsec data-theme-sec data-bg="light" className="bg-snow px-5 pb-24 pt-10 text-obsidian-950 sm:px-8 sm:pb-32 sm:pt-14">
+      <section id="marka" data-lsec data-theme-sec data-bg="light" className="bg-snow px-5 pb-24 pt-10 text-obsidian-950 sm:px-8 sm:pb-32 sm:pt-14 motion-safe:lg:-mt-[100svh] motion-safe:lg:pt-[16svh]">
         <div className="mx-auto max-w-6xl">
           <div data-lreveal className="mb-8 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-obsidian-950/45">
             <span className="border border-obsidian-950/25 px-2 py-1">01</span>
@@ -191,15 +191,17 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
           </div>
           {/* Image LEFT (the hero video lands on this exact frame), text RIGHT */}
           <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
-            <div data-lreveal className="overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)]">
+            <div
+              data-marka-slot
+              className="aspect-[4/3] overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)] lg:aspect-auto"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                data-parallax
+                data-marka-img
                 src={assets.videoEndFrame}
                 alt={brand.mediaAlt}
-                loading="lazy"
                 decoding="async"
-                className="aspect-[4/3] w-full scale-[1.16] object-cover lg:aspect-[16/10]"
+                className="h-full w-full object-cover"
               />
             </div>
             <div>

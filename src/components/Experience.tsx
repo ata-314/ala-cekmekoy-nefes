@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 import Header from "@/components/Header";
 import LowerSections from "@/components/lower/LowerSections";
@@ -16,6 +16,7 @@ import InfoPhase from "@/components/panels/InfoPhase";
 import AdvantagesPhase from "@/components/panels/AdvantagesPhase";
 import GalleryPhase from "@/components/panels/GalleryPhase";
 import ClosingPhase from "@/components/panels/ClosingPhase";
+import { assets, brand } from "@/content/project";
 
 /**
  * Chooses between the scroll-choreographed stage and the reduced-motion
@@ -150,33 +151,113 @@ function AnimatedStage({
       phaseOut("gallery", 65);
       phaseIn("closing", 71);
       phaseOut("closing", 81);
-      // The frame shrinks in place, then FLOWS DOWNWARD into section two:
-      // by the release point it sits low in the viewport at the size/x of the
-      // Marka section's opening image (the same final video frame), so the
-      // natural scroll carries it out while the identical section image
-      // follows it in — the card reads as passing into the section.
+      /* ---- Hand-off: the video's last frame TRANSFERS into the Marka
+         section and becomes its image.
+
+         Desktop (lg): at 85 the stage frame swaps to an identical
+         viewport-FIXED clone (same pixels — the extracted last frame).
+         Marka overlaps the hero's tail (motion-safe -100svh margin) and
+         slides up underneath while the fixed clone shrinks straight into
+         the measured rect of the section's image slot; at the release
+         point the clone swaps into the real in-flow slot image. One
+         continuous, scrub-reversible journey of a single visual.
+
+         Mobile: single column — the stage frame simply shrinks and flows
+         down; the slot image is always visible below. */
+      const lgQ = () => window.innerWidth >= 1024;
+      const marka = document.getElementById("marka");
+      const slot = document.querySelector<HTMLElement>("[data-marka-slot]");
+      const slotImg = document.querySelector<HTMLElement>("[data-marka-img]");
+      const flip = document.querySelector<HTMLElement>("[data-flip-frame]");
+
+      // The slot mirrors the viewport's aspect on lg so the frame's crop
+      // matches pixel-for-pixel at the swap.
+      const setRatio = () => {
+        if (!slot) return;
+        if (lgQ())
+          slot.style.aspectRatio = `${window.innerWidth} / ${window.innerHeight}`;
+        else slot.style.removeProperty("aspect-ratio");
+      };
+      setRatio();
+      ScrollTrigger.addEventListener("refreshInit", setRatio);
+
+      const slotTarget = () => {
+        if (!lgQ() || !marka || !slot) return null;
+        const m = marka.getBoundingClientRect();
+        const sl = slot.getBoundingClientRect();
+        // At the release point Marka's top sits exactly at the viewport top,
+        // so the slot's layout offset inside Marka IS its viewport rect then.
+        return {
+          scale: sl.width / window.innerWidth,
+          cx: sl.left + sl.width / 2,
+          cy: sl.top - m.top + sl.height / 2,
+        };
+      };
+
+      let swapped = false;
+      const applySwap = () => {
+        const on = swapped && lgQ();
+        if (slotImg) gsap.set(slotImg, { autoAlpha: on || !lgQ() ? 1 : 0 });
+        if (flip && on) gsap.set(flip, { autoAlpha: 0 });
+      };
+      applySwap();
+      ScrollTrigger.create({
+        trigger: track,
+        start: "bottom bottom",
+        onEnter: () => {
+          swapped = true;
+          applySwap();
+        },
+        onLeaveBack: () => {
+          swapped = false;
+          applySwap();
+          if (flip && lgQ()) gsap.set(flip, { autoAlpha: 1 });
+        },
+      });
+
+      // Mobile: stage frame shrinks in place and flows down (no swap).
       tl.to(
         "[data-video-frame]",
         {
-          scale: () => (window.innerWidth < 1024 ? 0.86 : 0.42),
-          borderRadius: 28,
-          boxShadow: "0 40px 90px -30px rgba(0,1,46,0.4)",
-          duration: 9,
+          scale: () => (lgQ() ? 1 : 0.86),
+          y: () => (lgQ() ? 0 : window.innerHeight * 0.1),
+          borderRadius: () => (lgQ() ? 0 : 28),
+          duration: 14,
           ease: "power1.inOut",
         },
         85
-      )
-        .to(
-          "[data-video-frame]",
-          {
-            x: () => (window.innerWidth < 1024 ? 0 : -window.innerWidth * 0.19),
-            y: () => window.innerHeight * (window.innerWidth < 1024 ? 0.1 : 0.16),
-            duration: 7,
-            ease: "power1.inOut",
-          },
-          93
-        )
-        .to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
+      );
+      // Desktop: swap stage frame → fixed clone, then fly the clone into
+      // the slot rect (scale/x/y/borderRadius all measured, so it lands
+      // exactly where the section image lives).
+      if (flip) {
+        tl.set("[data-video-frame]", { autoAlpha: () => (lgQ() ? 0 : 1) }, 85)
+          .set(flip, { autoAlpha: () => (lgQ() ? 1 : 0) }, 85)
+          .fromTo(
+            flip,
+            { scale: 1, x: 0, y: 0, borderRadius: 0 },
+            {
+              scale: () => slotTarget()?.scale ?? 0.4,
+              x: () => {
+                const t = slotTarget();
+                return t ? t.cx - window.innerWidth / 2 : 0;
+              },
+              y: () => {
+                const t = slotTarget();
+                return t ? t.cy - window.innerHeight / 2 : 0;
+              },
+              borderRadius: () => {
+                const t = slotTarget();
+                return t ? 28 / t.scale : 28;
+              },
+              boxShadow: "0 40px 90px -30px rgba(0,1,46,0.4)",
+              duration: 14,
+              ease: "power1.inOut",
+            },
+            85
+          );
+      }
+      tl.to("[data-progress-bar]", { autoAlpha: 0, duration: 3 }, 85);
       tl.to({}, { duration: 1 }, 99); // pin timeline length to 100 units
 
       if (progressRef.current) {
@@ -195,12 +276,28 @@ function AnimatedStage({
           }
         );
       }
+
+      return () => ScrollTrigger.removeEventListener("refreshInit", setRatio);
     },
     { scope: trackRef }
   );
 
   return (
     <div ref={trackRef} className="relative h-[780vh]">
+      {/* Viewport-fixed clone of the video's last frame — carries the visual
+          from the hero into the Marka slot on desktop. Hidden until 85%. */}
+      <div
+        data-flip-frame
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-[25] overflow-hidden opacity-0 will-change-transform"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={assets.videoEndFrame}
+          alt={brand.mediaAlt}
+          className="h-full w-full object-cover"
+        />
+      </div>
       {/* Snow ground shows around the video frame as it shrinks into a card */}
       <div className="sticky top-0 h-screen overflow-hidden bg-snow">
         <div
