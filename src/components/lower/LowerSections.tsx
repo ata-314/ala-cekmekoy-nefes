@@ -4,6 +4,8 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import {
+  assets,
+  advantages,
   brand,
   whyCekmekoy,
   info,
@@ -51,8 +53,8 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             if (self.isActive)
               gsap.to(root, {
                 backgroundColor: color,
-                duration: 0.8,
-                ease: "power2.out",
+                duration: 1.1,
+                ease: "power1.inOut",
                 overwrite: "auto",
               });
           },
@@ -69,10 +71,10 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
           {
             autoAlpha: 1,
             y: 0,
-            duration: 1,
+            duration: 0.9,
             ease: "power3.out",
-            stagger: 0.12,
-            scrollTrigger: { trigger: sec, start: "top 74%" },
+            stagger: 0.1,
+            scrollTrigger: { trigger: sec, start: "top 80%" },
           }
         );
       });
@@ -189,6 +191,35 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
               ))}
             </div>
           </div>
+
+          {/* The hero video "lands" here: same frame, same card language */}
+          <div data-lreveal className="mt-14 overflow-hidden rounded-[28px] shadow-[0_40px_90px_-30px_rgba(0,1,46,0.4)] sm:mt-20">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              data-parallax
+              src={assets.videoEndFrame}
+              alt={brand.mediaAlt}
+              loading="lazy"
+              decoding="async"
+              className="aspect-[16/10] w-full scale-[1.16] object-cover sm:aspect-[21/9]"
+            />
+          </div>
+
+          {/* Icon strip — the project's four pillars */}
+          <ul className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 sm:mt-14 lg:grid-cols-4">
+            {advantages.items.map((item) => (
+              <li key={item.title} data-lreveal className="flex items-start gap-3.5">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-obsidian-950/15 bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={item.icon.replace(".svg", "-ink.svg")} alt="" className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-bold leading-tight">{item.title}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-obsidian-950/60">{item.body}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
 
           {/* Neden Çekmeköy */}
           <div className="mt-20 sm:mt-28">
@@ -353,9 +384,9 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
 
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl items-center px-5 py-24 sm:px-8 sm:py-32">
           <div data-lreveal className="w-full max-w-md">
-            <div className="bg-obsidian-950 p-7 text-snow shadow-[0_40px_90px_-30px_rgba(0,1,46,0.5)] sm:p-9">
-              <div className="mb-6 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-snow/45">
-                <span className="border border-snow/30 px-2 py-1">04</span>
+            <div className="glass-frost rounded-[28px] p-7 text-obsidian-950 sm:p-9">
+              <div className="mb-6 flex items-center gap-4 text-[0.65rem] font-bold uppercase tracking-[0.4em] text-obsidian-950/50">
+                <span className="border border-obsidian-950/25 px-2 py-1">04</span>
                 {location.eyebrow}
               </div>
               <h2 className="font-display text-3xl leading-[1.15] sm:text-4xl">
@@ -365,15 +396,15 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
                   </span>
                 ))}
               </h2>
-              <p className="mt-5 text-sm leading-relaxed text-snow/70">{location.body}</p>
+              <p className="mt-5 text-sm leading-relaxed text-obsidian-950/70">{location.body}</p>
               <ul className="mt-7">
                 {location.pois.map((poi) => (
                   <li
                     key={poi.name}
-                    className="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-snow/12 py-3 transition-colors duration-300 hover:border-snow/45"
+                    className="group flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 border-b border-obsidian-950/10 py-3 transition-colors duration-300 hover:border-obsidian-950/40"
                   >
                     <span className="text-[0.85rem] font-semibold">{poi.name}</span>
-                    <span className="text-[0.7rem] text-snow/55">{poi.detail}</span>
+                    <span className="text-[0.7rem] text-obsidian-950/55">{poi.detail}</span>
                   </li>
                 ))}
               </ul>

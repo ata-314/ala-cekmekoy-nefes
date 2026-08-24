@@ -16,6 +16,8 @@ export const assets = {
   heroVideoMobile: "/assets/video/hero-mobile.mp4",
   /** First frame of the video; also the reduced-motion background. */
   heroPoster: "/assets/video/poster.jpg",
+  /** Last frame of the video — the hero card "lands" as this image at the top of the Marka section. */
+  videoEndFrame: "/assets/video/videoend.jpg",
 } as const;
 
 export const identity = {
@@ -151,6 +153,8 @@ export const form = {
 
 export const brand = {
   eyebrow: "Marka Hakkında",
+  mediaAlt:
+    "A'lâ Çekmeköy Nefes yerleşkesi — havuz ve bloklarıyla gün batımında genel görünüm",
   heading: "Seçkin bir yaşam anlayışı,\nÇekmeköy'ün nefesiyle.",
   paragraphs: [
     "A'lâ Çekmeköy Nefes; şehir hayatının temposundan uzaklaşmadan, daha sakin, daha güvenli ve daha iyi hissettiren bir yaşam arayan aileler için hayata geçiriliyor.",

@@ -90,67 +90,67 @@ export default function Header({ onContact }: { onContact: () => void }) {
 
   return (
     <>
-      <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
-        {/* Legibility scrim */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-obsidian-950/80 via-obsidian-950/35 to-transparent"
-        />
-        {/* Page progress hairline */}
-        <div aria-hidden className="absolute inset-x-0 top-0 h-[2.5px] bg-snow/10">
-          <div
-            ref={progressRef}
-            className="h-full origin-left bg-snow/80"
-            style={{ transform: "scaleX(0)" }}
-          />
-        </div>
+      <header className="fixed inset-x-0 top-0 z-40">
+        {/* Full-width frosted bar — the menu owns the whole top strip */}
+        <div className="glass rounded-none border-x-0 border-t-0 bg-obsidian-950/40">
+          {/* Page progress hairline */}
+          <div aria-hidden className="absolute inset-x-0 top-0 h-[2.5px] bg-snow/10">
+            <div
+              ref={progressRef}
+              className="h-full origin-left bg-snow/80"
+              style={{ transform: "scaleX(0)" }}
+            />
+          </div>
 
-        <div className="flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5">
-          <button
-            type="button"
-            onClick={goTop}
-            aria-label="Başa dön"
-            className="pointer-events-auto cursor-pointer"
-          >
-            <Logo />
-          </button>
-
-          {/* Desktop nav */}
-          <nav
-            aria-label="Site menüsü"
-            className="glass-light pointer-events-auto hidden items-center gap-1 rounded-full bg-obsidian-900/40 p-1.5 pl-2 md:flex"
-          >
-            {nav.items.map((item) => (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => go(item.anchor)}
-                aria-current={active === item.anchor ? "true" : undefined}
-                className={itemClass(item.anchor)}
-              >
-                {item.label}
-              </button>
-            ))}
+          <div className="grid h-[72px] grid-cols-[1fr_auto] items-center px-5 sm:h-20 sm:px-8 md:grid-cols-[1fr_auto_1fr]">
             <button
               type="button"
-              onClick={() => {
-                setMenuOpen(false);
-                onContact();
-              }}
-              className="cta rounded-full bg-accent px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950"
+              onClick={goTop}
+              aria-label="Başa dön"
+              className="cursor-pointer justify-self-start"
             >
-              {nav.contact}
+              <Logo className="h-11 sm:h-12" />
             </button>
-          </nav>
 
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
-            aria-expanded={menuOpen}
-            className="glass-light pointer-events-auto flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-full bg-obsidian-900/40 md:hidden"
-          >
+            {/* Centered desktop nav */}
+            <nav
+              aria-label="Site menüsü"
+              className="hidden items-center gap-1 justify-self-center md:flex"
+            >
+              {nav.items.map((item) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => go(item.anchor)}
+                  aria-current={active === item.anchor ? "true" : undefined}
+                  className={itemClass(item.anchor)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+
+            <div className="hidden justify-self-end md:block">
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onContact();
+                }}
+                className="cta rounded-full bg-accent px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950"
+              >
+                {nav.contact}
+              </button>
+            </div>
+
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
+              aria-expanded={menuOpen}
+              className="flex h-11 w-11 flex-col items-center justify-center gap-[5px] justify-self-end rounded-full border border-snow/15 md:hidden"
+            >
             <span
               className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
             />
@@ -160,7 +160,8 @@ export default function Header({ onContact }: { onContact: () => void }) {
             <span
               className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
             />
-          </button>
+            </button>
+          </div>
         </div>
 
         {/* Mobile dropdown */}
@@ -168,7 +169,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
           {menuOpen && (
             <motion.nav
               aria-label="Site menüsü"
-              className="glass pointer-events-auto mx-5 flex flex-col overflow-hidden rounded-2xl bg-obsidian-900/60 p-2 md:hidden"
+              className="glass mx-4 mt-2 flex flex-col overflow-hidden rounded-2xl bg-obsidian-900/70 p-2 md:hidden"
               initial={{ opacity: 0, y: -12, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -12, scale: 0.98 }}
