@@ -101,7 +101,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
 
       <header className="fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-5">
         {/* Apple-style floating pill: soft radius, centered, frosted */}
-        <div className="glass flex items-center gap-3 rounded-full bg-obsidian-950/35 py-2.5 pl-6 pr-2.5 sm:gap-6 sm:pl-8">
+        <div className="glass flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full bg-obsidian-950/35 py-2.5 pl-6 pr-2.5 sm:gap-6 sm:pl-8 lg:max-w-[56rem]">
           <button
             type="button"
             onClick={goTop}

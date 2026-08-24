@@ -25,12 +25,12 @@ export default function LeadPanel({
             <motion.aside
               aria-label={form.title}
               className="pointer-events-auto w-[350px] xl:w-[380px]"
-              initial={{ x: 60, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 60, opacity: 0 }}
+              initial={{ x: 480 }}
+              animate={{ x: 0 }}
+              exit={{ x: 480 }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
             >
-              <div className="relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[28px] border border-snow/14 bg-obsidian-900/95 p-7 shadow-[0_30px_80px_-24px_rgba(0,0,20,0.7)] xl:p-8">
+              <div className="glass relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[28px] bg-obsidian-900/60 p-7 xl:p-8">
                 {/* Champagne accent hairline */}
                 <div
                   aria-hidden
@@ -65,10 +65,10 @@ export default function LeadPanel({
               type="button"
               onClick={() => onOpenChange(true)}
               aria-label={`${form.title} panelini aç`}
-              className="cta rounded-l-2xl border border-r-0 border-snow/15 bg-obsidian-900/95 px-3.5 py-6 text-sm font-bold tracking-[0.2em] text-accent [writing-mode:vertical-rl]"
-              initial={{ x: 64, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 64, opacity: 0 }}
+              className="cta glass rounded-l-2xl border-r-0 bg-obsidian-900/60 px-3.5 py-6 text-sm font-bold tracking-[0.2em] text-accent [writing-mode:vertical-rl]"
+              initial={{ x: 72 }}
+              animate={{ x: 0 }}
+              exit={{ x: 72 }}
               transition={{ type: "spring", damping: 28, stiffness: 240 }}
             >
               {form.submit}

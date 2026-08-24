@@ -56,7 +56,7 @@ export default function MobileLeadSheet({
               aria-modal="true"
               aria-label={form.title}
               tabIndex={-1}
-              className="fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl border-t border-snow/15 bg-obsidian-900 p-6 pb-10 shadow-[0_-30px_80px_-20px_rgba(0,0,20,0.7)] outline-none"
+              className="glass fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-obsidian-900/70 p-6 pb-10 outline-none"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
