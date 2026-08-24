@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
-import { scrollToProgress } from "@/lib/lenisStore";
 import Header from "@/components/Header";
+import LowerSections from "@/components/lower/LowerSections";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollVideo from "@/components/ScrollVideo";
 import StaticExperience from "@/components/StaticExperience";
@@ -26,12 +26,27 @@ export default function Experience() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(true);
 
-  // Menu "Bilgi Al": desktop reveals the side panel (scrolling to the close),
-  // mobile opens the bottom sheet directly.
+  // The desktop panel belongs to the hero experience: when the classic
+  // sections scroll into view it folds away to the edge tab so it never
+  // covers content — the user can reopen it anywhere.
+  useEffect(() => {
+    const lower = document.getElementById("lower");
+    if (!lower) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setPanelOpen(false);
+      },
+      { rootMargin: "0px 0px -35% 0px" }
+    );
+    io.observe(lower);
+    return () => io.disconnect();
+  }, []);
+
+  // "Bilgi Al": the side panel is fixed and site-wide on desktop — just make
+  // sure it's open; mobile opens the bottom sheet.
   const handleContact = () => {
     if (window.matchMedia("(min-width: 1024px)").matches) {
       setPanelOpen(true);
-      scrollToProgress(1);
     } else {
       setSheetOpen(true);
     }
@@ -51,6 +66,8 @@ export default function Experience() {
           panelOpen={panelOpen}
         />
       )}
+      {/* Classic-flow content continues after the hero experience ends */}
+      <LowerSections onContact={handleContact} />
     </>
   );
 }
@@ -174,10 +191,10 @@ function AnimatedStage({
         </div>
 
         {/* Scroll progress hairline */}
-        <div className="absolute inset-x-0 bottom-0 z-20 h-[2px] bg-cream/10">
+        <div className="absolute inset-x-0 bottom-0 z-20 h-[2px] bg-snow/10">
           <div
             ref={progressRef}
-            className="h-full origin-left bg-champagne"
+            className="h-full origin-left bg-accent"
             style={{ transform: "scaleX(0)" }}
           />
         </div>

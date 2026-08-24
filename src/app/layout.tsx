@@ -1,19 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Mona_Sans, Playfair_Display } from "next/font/google";
 import { seo, identity } from "@/content/project";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
+/* Corporate type (kurumsal kimlik): Mona Sans is the primary typeface.
+   The auxiliary display serif "The Season" is a licensed font we don't ship;
+   Playfair Display stands in behind it — drop the real files into
+   public/assets/fonts + an @font-face and the stack picks them up first. */
+const mona = Mona_Sans({
+  variable: "--font-mona",
+  subsets: ["latin", "latin-ext"],
 });
 
-const manrope = Manrope({
-  variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const season = Playfair_Display({
+  variable: "--font-season",
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b1c17",
+  themeColor: "#00012e",
   width: "device-width",
   initialScale: 1,
 };
@@ -39,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="tr"
-      className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
+      className={`${mona.variable} ${season.variable} h-full antialiased`}
     >
       <body className="min-h-full">{children}</body>
     </html>

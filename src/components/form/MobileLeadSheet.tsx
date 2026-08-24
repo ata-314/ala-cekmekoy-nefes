@@ -33,7 +33,7 @@ export default function MobileLeadSheet({
       <button
         type="button"
         onClick={() => onOpenChange(true)}
-        className="cta fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full bg-champagne px-8 py-3.5 text-sm font-bold tracking-wide text-forest-950 shadow-xl"
+        className="cta fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full bg-accent px-8 py-3.5 text-sm font-bold tracking-wide text-obsidian-950 shadow-xl"
       >
         {form.submit}
       </button>
@@ -44,7 +44,7 @@ export default function MobileLeadSheet({
             <motion.button
               type="button"
               aria-label="Formu kapat"
-              className="fixed inset-0 z-40 bg-forest-950/60 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-obsidian-950/60 backdrop-blur-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -62,17 +62,17 @@ export default function MobileLeadSheet({
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 32, stiffness: 320 }}
             >
-              <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-cream/25" aria-hidden />
+              <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-snow/25" aria-hidden />
               <div className="mb-5 flex items-start justify-between">
                 <div>
-                  <h2 className="font-display text-2xl text-cream">{form.title}</h2>
-                  <p className="mt-0.5 text-sm text-cream/65">{form.sub}</p>
+                  <h2 className="font-display text-2xl text-snow">{form.title}</h2>
+                  <p className="mt-0.5 text-sm text-snow/65">{form.sub}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
                   aria-label="Kapat"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-snow/20 text-snow/70"
                 >
                   ✕
                 </button>

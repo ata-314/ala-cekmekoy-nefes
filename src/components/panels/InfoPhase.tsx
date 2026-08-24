@@ -7,26 +7,26 @@ export default function InfoPhase() {
         data-reveal
         className="glass w-full max-w-xl rounded-3xl p-7 sm:p-10"
       >
-        <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+        <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-mist-400">
           {info.eyebrow}
         </p>
-        <h2 className="font-display text-3xl leading-tight text-cream sm:text-5xl">
+        <h2 className="font-display text-3xl leading-tight text-snow sm:text-5xl">
           {info.heading.split("\n").map((line) => (
             <span key={line} className="block">
               {line}
             </span>
           ))}
         </h2>
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-cream/75 sm:text-base">
+        <p className="mt-4 max-w-md text-sm leading-relaxed text-snow/75 sm:text-base">
           {info.body}
         </p>
         <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">
           {info.stats.map((stat) => (
             <div key={stat.label} data-reveal>
-              <dd className="font-display text-2xl text-champagne sm:text-3xl">
+              <dd className="font-display text-2xl text-accent sm:text-3xl">
                 {stat.value}
               </dd>
-              <dt className="mt-1 text-[0.65rem] uppercase tracking-[0.2em] text-cream/55">
+              <dt className="mt-1 text-[0.65rem] uppercase tracking-[0.2em] text-snow/55">
                 {stat.label}
               </dt>
             </div>

@@ -19,26 +19,30 @@ export const assets = {
 } as const;
 
 export const identity = {
-  name: "ALA ÇEKMEKÖY NEFES",
+  name: "A'lâ Çekmeköy Nefes",
   shortName: "NEFES",
   tagline: "Doğaya yakın. Hayata bağlı.",
   location: "Çekmeköy, İstanbul",
-  /** Shown as a static badge in the header. */
-  headerBadge: "Lansmana Özel Fırsatlar",
+  phone: "444 44 44",
+  phoneHref: "tel:4444444",
+  email: "info@alacekmekoynefes.com",
+  website: "www.alacekmekoynefes.com",
+  address: "Ferah, Akçağ Sk. No:26, 34692 Üsküdar/İstanbul",
 } as const;
 
 export const seo = {
-  title: "ALA Çekmeköy Nefes — Doğaya Yakın. Hayata Bağlı.",
+  title: "A'lâ Çekmeköy Nefes — Doğaya Yakın. Hayata Bağlı.",
   description:
     "Çekmeköy'ün orman dokusunun yanı başında: 14.300 m² arazi üzerinde 9 blok, yalnızca 72 seçkin konut. 3+1 ve 4+1 geniş daireler ile özel bahçeli seçenekler, lansmana özel fiyat ve ödeme avantajlarıyla.",
 } as const;
 
-/** Menu items scroll to a fraction of the experience (same mapping works for the reduced-motion layout). */
+/** Menu items jump to anchored sections below the hero experience. */
 export const nav = {
   items: [
-    { label: "Proje", progress: 0.25 },
-    { label: "Avantajlar", progress: 0.5 },
-    { label: "Galeri", progress: 0.78 },
+    { label: "Marka", anchor: "marka" },
+    { label: "Yaşam", anchor: "yasam" },
+    { label: "Galeri", anchor: "galeri" },
+    { label: "Konum", anchor: "konum" },
   ],
   contact: "Bilgi Al",
 } as const;
@@ -141,6 +145,88 @@ export const form = {
     unitType: "Lütfen bir konut tipi seçin.",
     kvkk: "Devam etmek için KVKK onayı gereklidir.",
   },
+} as const;
+
+/* ---------- Lower sections (below the hero experience) ---------- */
+
+export const brand = {
+  eyebrow: "Marka Hakkında",
+  heading: "Seçkin bir yaşam anlayışı,\nÇekmeköy'ün nefesiyle.",
+  paragraphs: [
+    "A'lâ Çekmeköy Nefes; şehir hayatının temposundan uzaklaşmadan, daha sakin, daha güvenli ve daha iyi hissettiren bir yaşam arayan aileler için hayata geçiriliyor.",
+    "Proje adındaki \"A'lâ\", seçkin, özenli ve nitelikli bir yaşam anlayışını temsil eder. \"Nefes\" ise Çekmeköy'ün yeşil dokusu içinde ferahlığı, huzuru ve eve dönüldüğünde hissedilen iç rahatlığını anlatır.",
+    "9 blok ve 72 daireden oluşan butik yapısıyla proje; geniş 3+1 ve 4+1 daireleri, bahçe ve teras kullanımlarıyla ailelere villa hayatına alternatif olabilecek ferah, mahremiyetli ve konforlu bir yaşam deneyimi kazandırır.",
+  ],
+} as const;
+
+export const whyCekmekoy = {
+  eyebrow: "Neden Çekmeköy?",
+  heading: "İstanbul'un yeni premium yaşam aksında.",
+  items: [
+    "Güçlü özel okul ve eğitim altyapısı",
+    "Ormanlar ve doğal yaşam alanları",
+    "Spor ve açık hava olanakları",
+    "Gelişen premium konut çevresi",
+    "Aile yaşamına uygun sosyal yapı",
+    "İstanbul'un ana ulaşım ağlarına bağlantı",
+  ],
+} as const;
+
+export const editorial = {
+  eyebrow: "Yaşam",
+  heading: "Nefes'te hayat,\nkapınızda bitmiyor.",
+  rows: [
+    {
+      image: gallery.items[4],
+      title: "Doğayı seyretmek değil, yaşamak",
+      body: "Geniş balkonlar ve teraslar, peyzajla bütünleşen yaşam alanları ve özel bahçeli konutlar farklı yaşam tercihlerine cevap veriyor. Bazı bahçeli evlerde yüzlerce metrekarelik eve özel açık alanlar bulunuyor — açık alan evinizin manzarası değil, devamı.",
+    },
+    {
+      image: gallery.items[6],
+      title: "Büyük ev değil, doğru ev",
+      body: "197 m²'den 333 m²'nin üzerine uzanan 3+1 ve 4+1 daireler; geniş salonlar, büyük ebeveyn yatak odaları, giyinme ve çalışma odaları, işlik çözümleri ve her konuta özel 4–8 m² depo ile günlük hayat düşünülerek planlandı.",
+    },
+    {
+      image: gallery.items[7],
+      title: "Çocuklar için iyi bir büyüme çevresi",
+      body: "Çekmeköy'ün güçlü eğitim altyapısı; doğa, düşük yoğunluklu site yaşamı, geniş evler ve açık alanlarla aynı çevrede buluşuyor. Okula yakın, ormana komşu, çocuklu hayata Nefes.",
+    },
+  ],
+} as const;
+
+export const galleryBelow = {
+  eyebrow: "Galeri",
+  heading: "Projeyi yakından görün.",
+} as const;
+
+export const location = {
+  eyebrow: "Konum",
+  heading: "Çekmeköy'de, tam\nolması gereken yerde.",
+  body: "Proje, Lens Çekmeköy'ün hemen arkasında, Şile Otoyolu'nun hemen üzerinde konumlanıyor; ana yol bağlantısı yaklaşık 15–20 metre mesafede. Bir tarafta Çekmeköy'ün orman dokusu, diğer tarafta şehrin ulaşım ve günlük yaşam olanakları.",
+  mapImage: "/assets/map/konum.jpg",
+  mapAlt:
+    "A'lâ Çekmeköy Nefes konum haritası — Lens Çekmeköy, Şile Otoyolu, Parseller Metro, Yenidoğu Okulları, Medistate Hastanesi, Metrogarden ve Buyaka AVM",
+  pois: [
+    { name: "Lens Çekmeköy", detail: "Hemen arkasında — market, kafe ve restoranlar" },
+    { name: "Şile Otoyolu (D.016)", detail: "Ana yol bağlantısı yaklaşık 15–20 m" },
+    { name: "Yenidoğu Okulları", detail: "Nitelikli eğitim yanı başınızda" },
+    { name: "Parseller Metro", detail: "Metroyla İstanbul'a bağlantı" },
+    { name: "Medistate Hastanesi", detail: "Sağlık olanakları yakın çevrede" },
+    { name: "Metrogarden & Buyaka AVM", detail: "Alışveriş ve sosyal yaşam" },
+    { name: "Kuzey Marmara Otoyolu (E-80)", detail: "Şehir dışına hızlı erişim" },
+  ],
+} as const;
+
+export const finalCta = {
+  eyebrow: "Lansmana Özel",
+  heading: "Nefes'te yerinizi lansman\navantajlarıyla alın.",
+  body: "Özel fiyat ve ödeme avantajları, farklı daire ve sınırlı sayıdaki bahçeli konut alternatifleri için satış ekibimizle tanışın.",
+  cta: "Lansman Fırsatlarını Öğrenin",
+} as const;
+
+export const footer = {
+  legal: "© 2026 A'lâ Çekmeköy Nefes. Tüm hakları saklıdır.",
+  kvkkLabel: "KVKK Aydınlatma Metni",
 } as const;
 
 export type GalleryItem = (typeof gallery.items)[number];

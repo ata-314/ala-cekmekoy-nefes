@@ -10,11 +10,12 @@ export default function SmartImage({
   src,
   alt,
   className = "",
+  ...rest
 }: {
   src: string;
   alt: string;
   className?: string;
-}) {
+} & React.ImgHTMLAttributes<HTMLImageElement>) {
   const { imgRef, missing, onError } = useImageFallback();
 
   if (missing) {
@@ -22,9 +23,9 @@ export default function SmartImage({
       <div
         role="img"
         aria-label={`${alt} (görsel bekleniyor)`}
-        className={`flex items-center justify-center bg-gradient-to-br from-forest-800 to-forest-950 ${className}`}
+        className={`flex items-center justify-center bg-gradient-to-br from-obsidian-800 to-obsidian-950 ${className}`}
       >
-        <span className="px-4 text-center text-[0.65rem] uppercase tracking-[0.3em] text-cream/35">
+        <span className="px-4 text-center text-[0.65rem] uppercase tracking-[0.3em] text-snow/35">
           Görsel bekleniyor
         </span>
       </div>
@@ -41,6 +42,7 @@ export default function SmartImage({
       decoding="async"
       className={`object-cover ${className}`}
       onError={onError}
+      {...rest}
     />
   );
 }

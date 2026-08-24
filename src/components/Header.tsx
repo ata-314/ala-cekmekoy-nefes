@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Logo from "@/components/Logo";
 import { nav } from "@/content/project";
-import { scrollToProgress } from "@/lib/lenisStore";
+import { scrollToAnchor, scrollToProgress } from "@/lib/lenisStore";
 
 /**
  * Fixed menu bar: logo left, glass nav right. Items smooth-scroll to their
@@ -22,17 +22,25 @@ export default function Header({ onContact }: { onContact: () => void }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
-  const go = (p: number) => {
+  const go = (anchor: string) => {
     setMenuOpen(false);
-    scrollToProgress(p);
+    scrollToAnchor(anchor);
   };
 
   return (
     <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
+      {/* Legibility scrim: keeps the white logo and nav readable over light sections */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 -z-10 h-32 bg-gradient-to-b from-obsidian-950/80 via-obsidian-950/35 to-transparent"
+      />
       <div className="flex items-center justify-between px-5 py-4 sm:px-8 sm:py-5">
         <button
           type="button"
-          onClick={() => go(0)}
+          onClick={() => {
+            setMenuOpen(false);
+            scrollToProgress(0);
+          }}
           aria-label="Başa dön"
           className="pointer-events-auto cursor-pointer"
         >
@@ -48,8 +56,8 @@ export default function Header({ onContact }: { onContact: () => void }) {
             <button
               key={item.label}
               type="button"
-              onClick={() => go(item.progress)}
-              className="rounded-full px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-cream/75 transition-colors duration-300 hover:bg-cream/10 hover:text-cream"
+              onClick={() => go(item.anchor)}
+              className="rounded-full px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-snow/75 transition-colors duration-300 hover:bg-snow/10 hover:text-snow"
             >
               {item.label}
             </button>
@@ -60,7 +68,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
               setMenuOpen(false);
               onContact();
             }}
-            className="cta rounded-full bg-champagne px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-forest-950"
+            className="cta rounded-full bg-accent px-5 py-2 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-obsidian-950"
           >
             {nav.contact}
           </button>
@@ -75,13 +83,13 @@ export default function Header({ onContact }: { onContact: () => void }) {
           className="glass-light pointer-events-auto flex h-11 w-11 flex-col items-center justify-center gap-[5px] rounded-full md:hidden"
         >
           <span
-            className={`h-[1.5px] w-4.5 bg-cream transition-transform duration-300 ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
+            className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
           />
           <span
-            className={`h-[1.5px] w-4.5 bg-cream transition-opacity duration-300 ${menuOpen ? "opacity-0" : ""}`}
+            className={`h-[1.5px] w-4.5 bg-snow transition-opacity duration-300 ${menuOpen ? "opacity-0" : ""}`}
           />
           <span
-            className={`h-[1.5px] w-4.5 bg-cream transition-transform duration-300 ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
+            className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
           />
         </button>
       </div>
@@ -101,8 +109,8 @@ export default function Header({ onContact }: { onContact: () => void }) {
               <button
                 key={item.label}
                 type="button"
-                onClick={() => go(item.progress)}
-                className="rounded-xl px-4 py-3.5 text-left text-sm font-semibold uppercase tracking-[0.18em] text-cream/85 transition-colors hover:bg-cream/10"
+                onClick={() => go(item.anchor)}
+                className="rounded-xl px-4 py-3.5 text-left text-sm font-semibold uppercase tracking-[0.18em] text-snow/85 transition-colors hover:bg-snow/10"
               >
                 {item.label}
               </button>
@@ -113,7 +121,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
                 setMenuOpen(false);
                 onContact();
               }}
-              className="cta mt-1 rounded-xl bg-champagne px-4 py-3.5 text-left text-sm font-bold uppercase tracking-[0.18em] text-forest-950"
+              className="cta mt-1 rounded-xl bg-accent px-4 py-3.5 text-left text-sm font-bold uppercase tracking-[0.18em] text-obsidian-950"
             >
               {nav.contact}
             </button>

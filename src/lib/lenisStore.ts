@@ -3,6 +3,20 @@ import type Lenis from "lenis";
 /** Live Lenis instance (null when smooth scroll is off, e.g. reduced motion). */
 export const lenisStore: { current: Lenis | null } = { current: null };
 
+/** Smooth-scroll to an anchored section by element id. */
+export function scrollToAnchor(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (lenisStore.current) {
+    lenisStore.current.scrollTo(el, {
+      duration: 1.6,
+      easing: (t: number) => 1 - Math.pow(1 - t, 3),
+    });
+  } else {
+    el.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
 /** Smooth-scroll to a fraction of the page's scrollable height. */
 export function scrollToProgress(p: number) {
   const max =

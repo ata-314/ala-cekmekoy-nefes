@@ -19,10 +19,10 @@ export default function StaticExperience({
     <div className="relative">
       <div
         aria-hidden
-        className="fixed inset-0 bg-gradient-to-b from-forest-800 via-forest-900 to-forest-950 bg-cover bg-center"
+        className="fixed inset-0 bg-gradient-to-b from-obsidian-800 via-obsidian-900 to-obsidian-950 bg-cover bg-center"
         style={{ backgroundImage: `url(${assets.heroPoster})` }}
       />
-      <div aria-hidden className="fixed inset-0 bg-forest-950/60" />
+      <div aria-hidden className="fixed inset-0 bg-obsidian-950/60" />
       <div className="relative z-10 lg:pr-[420px] xl:pr-[450px]">
         <section className="min-h-screen">
           <IntroPhase />

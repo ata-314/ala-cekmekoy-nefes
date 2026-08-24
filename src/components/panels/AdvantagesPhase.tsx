@@ -6,10 +6,10 @@ export default function AdvantagesPhase() {
     <div className="flex h-full items-center justify-center px-5 sm:px-8">
       <div className="w-full max-w-2xl">
         <div data-reveal className="mb-6 sm:mb-8">
-          <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+          <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-mist-400">
             {advantages.eyebrow}
           </p>
-          <h2 className="font-display text-3xl leading-tight text-cream sm:text-5xl">
+          <h2 className="font-display text-3xl leading-tight text-snow sm:text-5xl">
             {advantages.heading.split("\n").map((line) => (
               <span key={line} className="block">
                 {line}
@@ -26,10 +26,10 @@ export default function AdvantagesPhase() {
             >
               <AdvantageIcon src={item.icon} alt="" />
               <div>
-                <h3 className="text-sm font-semibold tracking-wide text-cream">
+                <h3 className="text-sm font-semibold tracking-wide text-snow">
                   {item.title}
                 </h3>
-                <p className="mt-1.5 text-[0.8rem] leading-relaxed text-cream/70">
+                <p className="mt-1.5 text-[0.8rem] leading-relaxed text-snow/70">
                   {item.body}
                 </p>
               </div>

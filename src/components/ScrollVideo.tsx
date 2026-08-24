@@ -95,7 +95,7 @@ export default function ScrollVideo({
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden>
       {/* Gradient ground: visible until video/poster paints, and if assets are missing */}
-      <div className="absolute inset-0 bg-gradient-to-b from-forest-800 via-forest-900 to-forest-950" />
+      <div className="absolute inset-0 bg-gradient-to-b from-obsidian-800 via-obsidian-900 to-obsidian-950" />
       <div ref={wrapRef} className="absolute inset-0 will-change-transform">
         {!failed && (
           <video
@@ -113,7 +113,7 @@ export default function ScrollVideo({
         )}
       </div>
       {/* Light legibility scrim — kept subtle so the footage stays vivid */}
-      <div className="absolute inset-0 bg-gradient-to-b from-forest-950/30 via-transparent to-forest-950/40" />
+      <div className="absolute inset-0 bg-gradient-to-b from-obsidian-950/30 via-transparent to-obsidian-950/40" />
     </div>
   );
 }

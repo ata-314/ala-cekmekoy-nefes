@@ -42,11 +42,11 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
   if (submitted) {
     return (
       <div role="status" className="flex flex-col items-start gap-2 py-6">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-champagne/15 text-champagne">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent">
           ✓
         </span>
-        <p className="font-display text-2xl text-cream">{form.success.title}</p>
-        <p className="text-sm text-cream/70">{form.success.body}</p>
+        <p className="font-display text-2xl text-snow">{form.success.title}</p>
+        <p className="text-sm text-snow/70">{form.success.body}</p>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
       <div>
-        <label htmlFor={id("name")} className="mb-1.5 block text-xs font-semibold tracking-wide text-cream/80">
+        <label htmlFor={id("name")} className="mb-1.5 block text-xs font-semibold tracking-wide text-snow/80">
           {form.fields.name.label}
         </label>
         <input
@@ -78,7 +78,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
       </div>
 
       <div>
-        <label htmlFor={id("phone")} className="mb-1.5 block text-xs font-semibold tracking-wide text-cream/80">
+        <label htmlFor={id("phone")} className="mb-1.5 block text-xs font-semibold tracking-wide text-snow/80">
           {form.fields.phone.label}
         </label>
         <input
@@ -96,7 +96,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
       </div>
 
       <div>
-        <label htmlFor={id("email")} className="mb-1.5 block text-xs font-semibold tracking-wide text-cream/80">
+        <label htmlFor={id("email")} className="mb-1.5 block text-xs font-semibold tracking-wide text-snow/80">
           {form.fields.email.label}
         </label>
         <input
@@ -113,7 +113,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
       </div>
 
       <fieldset>
-        <legend className="mb-2 block text-xs font-semibold tracking-wide text-cream/80">
+        <legend className="mb-2 block text-xs font-semibold tracking-wide text-snow/80">
           {form.fields.unitType.label}
         </legend>
         <div
@@ -128,7 +128,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
                 value={t}
                 className="peer sr-only"
               />
-              <span className="block rounded-full border border-cream/20 bg-forest-950/35 px-4 py-2 text-xs font-semibold text-cream/70 transition-all duration-300 hover:border-cream/45 peer-checked:border-champagne/80 peer-checked:bg-champagne/15 peer-checked:text-champagne peer-focus-visible:outline-2 peer-focus-visible:outline-champagne">
+              <span className="block rounded-full border border-snow/20 bg-obsidian-950/35 px-4 py-2 text-xs font-semibold text-snow/70 transition-all duration-300 hover:border-snow/45 peer-checked:border-accent/80 peer-checked:bg-accent/15 peer-checked:text-accent peer-focus-visible:outline-2 peer-focus-visible:outline-accent">
                 {t}
               </span>
             </label>
@@ -143,12 +143,12 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
             id={id("kvkk")}
             name="kvkk"
             type="checkbox"
-            className="mt-0.5 h-4 w-4 shrink-0 accent-[#c9a96a]"
+            className="mt-0.5 h-4 w-4 shrink-0 accent-[#ffffff]"
             aria-invalid={!!errors.kvkk}
             aria-describedby={errors.kvkk ? id("kvkk-error") : undefined}
           />
-          <span className="text-[0.7rem] leading-relaxed text-cream/60">
-            <a href={form.kvkk.href} className="underline decoration-champagne/60 underline-offset-2 hover:text-cream">
+          <span className="text-[0.7rem] leading-relaxed text-snow/60">
+            <a href={form.kvkk.href} className="underline decoration-accent/60 underline-offset-2 hover:text-snow">
               {form.kvkk.linkText}
             </a>
             {form.kvkk.label.replace(form.kvkk.linkText, "")}
@@ -159,7 +159,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
 
       <button
         type="submit"
-        className="cta group mt-1 flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-champagne to-[#b8925a] px-6 py-3.5 text-sm font-bold tracking-wide text-forest-950"
+        className="cta group mt-1 flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-bold tracking-wide text-obsidian-950"
       >
         {form.submit}
         <span
@@ -169,7 +169,7 @@ export default function LeadForm({ idPrefix }: { idPrefix: string }) {
           →
         </span>
       </button>
-      <p className="text-center text-[0.65rem] leading-relaxed text-cream/45">
+      <p className="text-center text-[0.65rem] leading-relaxed text-snow/45">
         {form.privacyNote}
       </p>
     </form>

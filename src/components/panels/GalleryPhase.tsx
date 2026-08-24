@@ -5,10 +5,10 @@ export default function GalleryPhase() {
   return (
     <div className="flex h-full flex-col justify-center px-5 sm:px-8">
       <div data-reveal className="mb-4 max-w-2xl sm:mb-6">
-        <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+        <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-mist-400">
           {gallery.eyebrow}
         </p>
-        <h2 className="font-display text-3xl leading-tight text-cream sm:text-5xl">
+        <h2 className="font-display text-3xl leading-tight text-snow sm:text-5xl">
           {gallery.heading}
         </h2>
       </div>

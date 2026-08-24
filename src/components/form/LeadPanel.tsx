@@ -30,25 +30,25 @@ export default function LeadPanel({
               exit={{ x: 60, opacity: 0 }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
             >
-              <div className="glass relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[28px] p-7 xl:p-8">
+              <div className="glass relative max-h-[calc(100vh-7rem)] overflow-y-auto rounded-[28px] bg-obsidian-900/55 p-7 xl:p-8">
                 {/* Champagne accent hairline */}
                 <div
                   aria-hidden
-                  className="absolute inset-x-8 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-champagne/80 to-transparent"
+                  className="absolute inset-x-8 top-0 h-[2px] rounded-full bg-gradient-to-r from-transparent via-accent/80 to-transparent"
                 />
                 <button
                   type="button"
                   onClick={() => onOpenChange(false)}
                   aria-label="Formu kapat"
-                  className="cta absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 text-cream/70 hover:text-cream"
+                  className="cta absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full border border-snow/20 text-snow/70 hover:text-snow"
                 >
                   ✕
                 </button>
-                <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-sand-400">
+                <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.4em] text-mist-400">
                   ALA Çekmeköy Nefes
                 </p>
-                <h2 className="font-display text-3xl text-cream">{form.title}</h2>
-                <p className="mb-6 mt-1.5 pr-10 text-sm leading-relaxed text-cream/65">
+                <h2 className="font-display text-3xl text-snow">{form.title}</h2>
+                <p className="mb-6 mt-1.5 pr-10 text-sm leading-relaxed text-snow/65">
                   {form.sub}
                 </p>
                 <LeadForm idPrefix="desktop" />
@@ -65,7 +65,7 @@ export default function LeadPanel({
               type="button"
               onClick={() => onOpenChange(true)}
               aria-label={`${form.title} panelini aç`}
-              className="cta glass rounded-l-2xl border-r-0 px-3.5 py-6 text-sm font-bold tracking-[0.2em] text-champagne [writing-mode:vertical-rl]"
+              className="cta glass rounded-l-2xl border-r-0 bg-obsidian-900/70 px-3.5 py-6 text-sm font-bold tracking-[0.2em] text-accent [writing-mode:vertical-rl]"
               initial={{ x: 64, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 64, opacity: 0 }}

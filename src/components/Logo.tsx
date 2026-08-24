@@ -18,10 +18,10 @@ export default function Logo({
   if (missing) {
     return (
       <span className="flex flex-col leading-none" aria-label={identity.name}>
-        <span className="font-display text-xl tracking-[0.18em] text-cream">
+        <span className="font-display text-xl tracking-[0.18em] text-snow">
           ALA
         </span>
-        <span className="text-[0.6rem] font-medium tracking-[0.42em] text-sand-400">
+        <span className="text-[0.6rem] font-medium tracking-[0.42em] text-mist-400">
           ÇEKMEKÖY NEFES
         </span>
       </span>
