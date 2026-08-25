@@ -43,6 +43,32 @@ export default function ScrollVideo({
     let tween: gsap.core.Tween | undefined;
     let onMove: ((e: PointerEvent) => void) | undefined;
 
+    // Seek throttle: writing currentTime on every tick queues seeks faster
+    // than the decoder can serve them — on Windows (DXVA pipelines,
+    // weaker iGPUs) the backlog reads as heavy stutter. We tween a proxy
+    // and only issue a new seek once the previous one has completed,
+    // always targeting the latest desired time.
+    const proxy = { t: 0 };
+    let seekQueued = false;
+    const issueSeek = () => {
+      if (Math.abs(video.currentTime - proxy.t) < 1 / 50) return;
+      video.currentTime = proxy.t;
+    };
+    const requestSeek = () => {
+      if (video.seeking) {
+        seekQueued = true;
+        return;
+      }
+      issueSeek();
+    };
+    const onSeeked = () => {
+      if (seekQueued) {
+        seekQueued = false;
+        issueSeek();
+      }
+    };
+    video.addEventListener("seeked", onSeeked);
+
     const onMeta = () => {
       if (isTouch) {
         video.loop = true;
@@ -53,12 +79,12 @@ export default function ScrollVideo({
       }
       const track = trackRef.current;
       if (!track) return;
-      // Scroll-scrubbed playback: one owner (GSAP) for currentTime.
+      // Scroll-scrubbed playback via the throttled proxy.
       tween = gsap.fromTo(
-        video,
-        { currentTime: 0 },
+        proxy,
+        { t: 0 },
         {
-          currentTime: video.duration || 1,
+          t: video.duration || 1,
           ease: "none",
           scrollTrigger: {
             trigger: track,
@@ -68,6 +94,7 @@ export default function ScrollVideo({
               (track.offsetHeight - window.innerHeight) * endFraction,
             scrub: 1.2, // lag smoothing → fluid, controlled frame advance
           },
+          onUpdate: requestSeek,
         }
       );
     };
@@ -91,6 +118,7 @@ export default function ScrollVideo({
 
     return () => {
       video.removeEventListener("loadedmetadata", onMeta);
+      video.removeEventListener("seeked", onSeeked);
       if (onMove) window.removeEventListener("pointermove", onMove);
       tween?.scrollTrigger?.kill();
       tween?.kill();
