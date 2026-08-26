@@ -37,6 +37,18 @@ export default function LocationMap() {
   const [focusRun, setFocusRun] = useState(0);
   const [showFocus, setShowFocus] = useState(false);
 
+  const startFocus = useCallback(() => {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    setShowFocus(true);
+    if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
+    focusTimerRef.current = setTimeout(
+      () => setShowFocus(false),
+      reducedMotion ? 900 : 5600
+    );
+  }, []);
+
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -45,13 +57,14 @@ export default function LocationMap() {
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         setShouldLoad(true);
+        startFocus();
         observer.disconnect();
       },
       { rootMargin: "500px 0px" }
     );
     observer.observe(section);
     return () => observer.disconnect();
-  }, []);
+  }, [startFocus]);
 
   useEffect(
     () => () => {
@@ -61,33 +74,43 @@ export default function LocationMap() {
   );
 
   const handleMapLoad = useCallback(() => {
-    const reducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
     setLoaded(true);
-    setShowFocus(true);
-    if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
-    focusTimerRef.current = setTimeout(
-      () => setShowFocus(false),
-      reducedMotion ? 900 : 5600
-    );
   }, []);
 
   const focusProject = useCallback(() => {
     setFailed(false);
     setLoaded(false);
-    setShowFocus(true);
     setFocusRun((run) => run + 1);
-  }, []);
+    startFocus();
+  }, [startFocus]);
 
   return (
     <div
       ref={sectionRef}
-      className={`ala-location-map ${loaded ? "is-loaded" : ""} ${
-        showFocus ? "is-focusing" : ""
-      }`}
+      className={`ala-location-map ${shouldLoad ? "is-presented" : ""} ${
+        loaded ? "is-loaded" : ""
+      } ${showFocus ? "is-focusing" : ""}`}
       aria-busy={shouldLoad && !loaded && !failed}
     >
+      <div className="ala-map-story">
+        <div className="ala-map-kicker">
+          <span>05</span>
+          <span>{mapCopy.eyebrow}</span>
+          <i />
+        </div>
+        <p className="ala-map-series">{mapCopy.posterSeries}</p>
+        <h2>
+          {mapCopy.heading.split("\n").map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </h2>
+        <p className="ala-map-location">{mapCopy.location}</p>
+        <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer">
+          {mapCopy.cta}
+          <ArrowIcon />
+        </a>
+      </div>
+
       <div className="ala-map-frame">
         {shouldLoad && !failed && (
           <iframe
@@ -103,80 +126,73 @@ export default function LocationMap() {
           />
         )}
 
-        {failed && (
-          <div className="ala-map-static" role="img" aria-label="Proje konum haritası">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/assets/map/konum.jpg" alt="" />
-          </div>
-        )}
-
-        {!loaded && !failed && (
-          <div className="ala-map-loader" aria-hidden="true">
+        {shouldLoad && !loaded && !failed && (
+          <div className="ala-map-loader" aria-live="polite">
             <span className="ala-map-loader-ring" />
-            <span>Konum hazırlanıyor</span>
+            <span>Canlı harita hazırlanıyor</span>
           </div>
         )}
-      </div>
 
-      {/* Narrative approach lines. They introduce the real map, then fade so
-          the embedded Google map remains completely usable. */}
-      <svg
-        className="ala-approach-lines"
-        viewBox="0 0 1440 900"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
-        <defs>
-          <marker
-            id="ala-route-arrow"
-            markerWidth="12"
-            markerHeight="12"
-            refX="10"
-            refY="6"
-            orient="auto"
-          >
-            <path d="M1 1 10 6 1 11" fill="none" stroke="currentColor" strokeWidth="1.8" />
-          </marker>
-        </defs>
-        <path className="ala-route-base" d="M-30 720C210 620 410 700 690 468" />
-        <path className="ala-route-flow ala-route-flow-one" d="M-30 720C210 620 410 700 690 468" />
-        <path className="ala-route-base ala-route-secondary" d="M1470 285C1190 300 980 330 746 438" />
-        <path className="ala-route-flow ala-route-flow-two" d="M1470 285C1190 300 980 330 746 438" />
-        <path className="ala-route-base ala-route-secondary" d="M980 930C930 720 850 590 742 470" />
-        <path className="ala-route-flow ala-route-flow-three" d="M980 930C930 720 850 590 742 470" />
-      </svg>
+        {failed && (
+          <div className="ala-map-fallback">
+            Canlı harita şu anda yüklenemedi — konumu Google Maps&apos;te açmak
+            için &quot;{mapCopy.cta}&quot; bağlantısını kullanın.
+          </div>
+        )}
 
-      <div className="ala-map-vignette" aria-hidden="true" />
-      <div className="ala-map-grain" aria-hidden="true" />
+        {/* Label wash: white radial veil, transparent over the project —
+            peripheral street/business labels dissolve into the canvas */}
+        <div className="ala-map-wash" aria-hidden="true" />
+        <div className="ala-map-vignette" aria-hidden="true" />
+        <div className="ala-map-grain" aria-hidden="true" />
 
-      <div className="ala-map-story">
-        <div className="ala-map-kicker">
-          <span>05</span>
-          <span>{mapCopy.eyebrow}</span>
-          <i />
+        <div className="ala-map-index" aria-hidden="true">41 / 29</div>
+        <div className="ala-map-caption" aria-hidden="true">
+          <strong>Ç E K M E K Ö Y</strong>
+          <span>İSTANBUL · TÜRKİYE</span>
+          <small>
+            {PROJECT_LOCATION.lat.toFixed(4)}° N&nbsp;&nbsp;/&nbsp;&nbsp;
+            {PROJECT_LOCATION.lng.toFixed(4)}° E
+          </small>
         </div>
-        <h2>
-          {mapCopy.heading.split("\n").map((line) => (
-            <span key={line}>{line}</span>
-          ))}
-        </h2>
-        <p>{mapCopy.location}</p>
-        <a href={DIRECTIONS_URL} target="_blank" rel="noopener noreferrer">
-          {mapCopy.cta}
-          <ArrowIcon />
-        </a>
-      </div>
 
-      <div className="ala-map-road-tag" aria-hidden="true">
-        <span />
-        {mapCopy.roadLabel}
-      </div>
+        <svg
+          className="ala-approach-lines"
+          viewBox="0 0 1000 700"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <marker
+              id="ala-route-arrow"
+              markerWidth="12"
+              markerHeight="12"
+              refX="10"
+              refY="6"
+              orient="auto"
+            >
+              <path d="M1 1 10 6 1 11" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            </marker>
+          </defs>
+          <path className="ala-route-base" d="M-20 560C180 500 320 520 482 362" />
+          <path className="ala-route-flow ala-route-flow-one" d="M-20 560C180 500 320 520 482 362" />
+          <path className="ala-route-base ala-route-secondary" d="M1020 190C830 210 690 250 520 338" />
+          <path className="ala-route-flow ala-route-flow-two" d="M1020 190C830 210 690 250 520 338" />
+          <path className="ala-route-base ala-route-secondary" d="M700 730C665 590 600 450 515 362" />
+          <path className="ala-route-flow ala-route-flow-three" d="M700 730C665 590 600 450 515 362" />
+        </svg>
 
-      <div className="ala-map-focus" aria-hidden="true">
-        <span className="ala-map-focus-orbit ala-map-focus-orbit-one" />
-        <span className="ala-map-focus-orbit ala-map-focus-orbit-two" />
-        <span className="ala-map-focus-dot" />
-        <strong>{mapCopy.projectLabel}</strong>
+        <div className="ala-map-road-tag" aria-hidden="true">
+          <span />
+          {mapCopy.roadLabel}
+        </div>
+
+        <div className="ala-map-focus" aria-hidden="true">
+          <span className="ala-map-focus-orbit ala-map-focus-orbit-one" />
+          <span className="ala-map-focus-orbit ala-map-focus-orbit-two" />
+          <span className="ala-map-focus-dot" />
+          <strong>{mapCopy.projectLabel}</strong>
+        </div>
       </div>
 
       <div className="ala-map-actions" aria-label="Harita kontrolleri">

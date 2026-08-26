@@ -35,7 +35,7 @@ Everything editable lives in **`src/content/project.ts`** — one typed file: id
 
 ## Konum section — Google My Maps, no API key
 
-The location section embeds the client's public Google My Maps document directly. It is interactive, lazy-loaded and client-only, but uses no Google Cloud project, billing account, API key or Map ID. The brand-owned layer around the embed adds the cinematic focus animation, approach arrows, project reticle, coordinate rail and custom controls. The original static render remains the network-error fallback.
+The location section opens as an art-directed cartographic poster on a light editorial canvas, inspired by technical map-print systems and built from the client's verified location artwork. Its animated approach lines, project reticle, coordinate signature and spaced place typography are brand-owned UI. “Etkileşimli Harita” switches the same frame to the client's public Google My Maps document. It is lazy-loaded and client-only, but uses no Google Cloud project, billing account, API key or Map ID; the poster remains available if Google cannot load.
 
 All URLs and verified location data live in `src/content/mapData.ts`. The project coordinate (41.0378312, 29.1528651) came from the client's My Maps KML. To change the actual map, update the public My Maps document; the site will reflect those map edits without a code deployment. Keep its sharing setting at “anyone with the link can view” so the embed stays available.
 

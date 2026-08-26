@@ -380,8 +380,8 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
       <section
         id="konum"
         data-theme-sec
-        data-bg="dark"
-        className="relative overflow-hidden bg-obsidian-950 text-snow"
+        data-bg="light"
+        className="relative overflow-hidden bg-snow text-obsidian-950"
       >
         <LocationMap />
       </section>

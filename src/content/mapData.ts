@@ -35,7 +35,10 @@ export const mapCopy = {
   cta: "Yol Tarifi Al",
   focus: "Konuma Odaklan",
   expand: "Haritayı Büyüt",
+  explore: "Etkileşimli Harita",
+  poster: "Poster Görünümü",
   hint: "Haritayı sürükleyin · Yakınlaştırmak için kaydırın",
   roadLabel: "Şile Otoyolu bağlantısı",
   coordinateLabel: "Proje koordinatı",
+  posterSeries: "A'LÂ · LOCATION SERIES 01",
 } as const;

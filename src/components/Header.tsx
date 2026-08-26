@@ -81,37 +81,63 @@ export default function Header({ onContact }: { onContact: () => void }) {
     scrollToProgress(0);
   };
 
+  const isLight = active === "konum";
+
   const itemClass = (anchor: string) =>
     `rounded-full px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
       active === anchor
-        ? "bg-snow text-obsidian-950"
-        : "text-snow/75 hover:bg-snow/10 hover:text-snow"
+        ? isLight
+          ? "bg-obsidian-950 text-snow"
+          : "bg-snow text-obsidian-950"
+        : isLight
+          ? "text-obsidian-950/65 hover:bg-obsidian-950/5 hover:text-obsidian-950"
+          : "text-snow/75 hover:bg-snow/10 hover:text-snow"
     }`;
 
   return (
     <>
       {/* Page progress hairline — pinned to the very top edge */}
-      <div aria-hidden className="fixed inset-x-0 top-0 z-50 h-[2.5px] bg-snow/10">
+      <div
+        aria-hidden
+        className={`fixed inset-x-0 top-0 z-50 h-[2.5px] transition-colors duration-500 ${
+          isLight ? "bg-obsidian-950/10" : "bg-snow/10"
+        }`}
+      >
         <div
           ref={progressRef}
-          className="h-full origin-left bg-snow/80"
+          className={`h-full origin-left transition-colors duration-500 ${
+            isLight ? "bg-obsidian-950/70" : "bg-snow/80"
+          }`}
           style={{ transform: "scaleX(0)" }}
         />
       </div>
 
       <header className="fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-5">
         {/* Apple-style floating pill: soft radius, centered, frosted */}
-        <div className="glass flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full bg-obsidian-950/35 py-2.5 pl-6 pr-2.5 sm:gap-6 sm:pl-8 lg:max-w-[56rem]">
+        <div
+          className={`flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full py-2.5 pl-6 pr-2.5 transition-all duration-500 sm:gap-6 sm:pl-8 lg:max-w-[56rem] ${
+            isLight
+              ? "border border-obsidian-950/10 bg-white/80 shadow-[0_18px_50px_-28px_rgba(0,1,46,0.35)] backdrop-blur-xl"
+              : "glass bg-obsidian-950/35"
+          }`}
+        >
           <button
             type="button"
             onClick={goTop}
             aria-label="Başa dön"
             className="cursor-pointer"
           >
-            <Logo className="h-11 sm:h-[3.25rem]" />
+            <span className={isLight ? "block brightness-0" : "block"}>
+              <Logo className="h-11 sm:h-[3.25rem]" />
+            </span>
           </button>
 
-          <span aria-hidden className="hidden h-6 w-px bg-snow/15 md:block" />
+          <span
+            aria-hidden
+            className={`hidden h-6 w-px md:block ${
+              isLight ? "bg-obsidian-950/15" : "bg-snow/15"
+            }`}
+          />
 
           {/* Desktop nav */}
           <nav aria-label="Site menüsü" className="hidden items-center gap-1.5 md:flex">
@@ -134,7 +160,11 @@ export default function Header({ onContact }: { onContact: () => void }) {
               setMenuOpen(false);
               onContact();
             }}
-            className="cta hidden rounded-full bg-accent px-6 py-3 text-[0.72rem] font-bold uppercase tracking-[0.2em] text-obsidian-950 md:block"
+            className={`cta hidden rounded-full px-6 py-3 text-[0.72rem] font-bold uppercase tracking-[0.2em] md:block ${
+              isLight
+                ? "bg-obsidian-950 text-snow"
+                : "bg-accent text-obsidian-950"
+            }`}
           >
             {nav.contact}
           </button>
@@ -145,16 +175,18 @@ export default function Header({ onContact }: { onContact: () => void }) {
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={menuOpen ? "Menüyü kapat" : "Menüyü aç"}
             aria-expanded={menuOpen}
-            className="flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-full border border-snow/15 md:hidden"
+            className={`flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-full border md:hidden ${
+              isLight ? "border-obsidian-950/15" : "border-snow/15"
+            }`}
           >
             <span
-              className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
+              className={`h-[1.5px] w-4.5 transition-transform duration-300 ${isLight ? "bg-obsidian-950" : "bg-snow"} ${menuOpen ? "translate-y-[6.5px] rotate-45" : ""}`}
             />
             <span
-              className={`h-[1.5px] w-4.5 bg-snow transition-opacity duration-300 ${menuOpen ? "opacity-0" : ""}`}
+              className={`h-[1.5px] w-4.5 transition-opacity duration-300 ${isLight ? "bg-obsidian-950" : "bg-snow"} ${menuOpen ? "opacity-0" : ""}`}
             />
             <span
-              className={`h-[1.5px] w-4.5 bg-snow transition-transform duration-300 ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
+              className={`h-[1.5px] w-4.5 transition-transform duration-300 ${isLight ? "bg-obsidian-950" : "bg-snow"} ${menuOpen ? "-translate-y-[6.5px] -rotate-45" : ""}`}
             />
           </button>
         </div>
@@ -216,7 +248,11 @@ export default function Header({ onContact }: { onContact: () => void }) {
             type="button"
             onClick={goTop}
             aria-label="Sayfanın başına dön"
-            className="cta glass fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-obsidian-900/60 text-lg text-snow sm:bottom-7 sm:right-7"
+            className={`cta fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full text-lg sm:bottom-7 sm:right-7 ${
+              isLight
+                ? "border border-obsidian-950/10 bg-white/85 text-obsidian-950 shadow-lg backdrop-blur-xl"
+                : "glass bg-obsidian-900/60 text-snow"
+            }`}
             initial={{ opacity: 0, y: 16, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.9 }}
