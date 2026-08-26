@@ -188,6 +188,123 @@ select.field option {
   box-shadow: 0 14px 34px -12px rgba(0, 1, 46, 0.45);
 }
 
+/* ---- Konum map: project marker, POI chips, skeleton ---- */
+.ala-map-marker {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  transform: scale(0.6);
+  opacity: 0;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s ease;
+}
+.ala-map-marker.is-visible {
+  transform: scale(1);
+  opacity: 1;
+}
+.ala-map-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: var(--accent);
+  border: 3px solid var(--obsidian-950);
+  box-shadow: 0 6px 18px rgba(0, 1, 46, 0.5);
+}
+.ala-map-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.5);
+  animation: ala-pulse 3.2s ease-out infinite;
+}
+@keyframes ala-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(4.2);
+    opacity: 0;
+  }
+}
+.ala-map-label {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 9999px;
+  background: rgba(0, 1, 46, 0.88);
+  border: 1px solid rgba(246, 247, 252, 0.25);
+  color: var(--snow);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  white-space: nowrap;
+}
+.ala-map-label img {
+  height: 1.1rem;
+  width: auto;
+}
+.ala-poi-marker {
+  padding: 0.32rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(246, 247, 252, 0.95);
+  border: 1px solid rgba(0, 1, 46, 0.15);
+  color: var(--obsidian-950);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ala-poi-marker.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ala-map-skeleton {
+  background:
+    linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(246, 247, 252, 0.06) 50%,
+      transparent 70%
+    ),
+    var(--obsidian-900);
+  background-size: 220% 100%, auto;
+  animation: ala-shimmer 1.8s ease-in-out infinite;
+}
+@keyframes ala-shimmer {
+  0% {
+    background-position: 130% 0, 0 0;
+  }
+  100% {
+    background-position: -60% 0, 0 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ala-map-pulse {
+    animation: none;
+    opacity: 0;
+  }
+  .ala-map-skeleton {
+    animation: none;
+  }
+  .ala-map-marker,
+  .ala-poi-marker {
+    transition: none;
+  }
+}
+
 /* Scroll hint */
 @keyframes hint-drift {
   0%,

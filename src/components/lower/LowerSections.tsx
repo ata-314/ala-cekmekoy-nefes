@@ -11,10 +11,17 @@ import {
   info,
   editorial,
   galleryBelow,
-  location,
   finalCta,
 } from "@/content/project";
+import dynamic from "next/dynamic";
 import MosaicGallery from "./MosaicGallery";
+
+/* Client-only, lazy: the Google Maps experience loads only in the browser
+   and only as the section nears the viewport (its own IO gate inside). */
+const LocationMap = dynamic(() => import("./LocationMap"), {
+  ssr: false,
+  loading: () => <div className="ala-map-skeleton h-[80svh] lg:h-[100svh]" />,
+});
 import SmartImage from "@/components/SmartImage";
 import Footer from "./Footer";
 
@@ -154,23 +161,6 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         );
       });
 
-
-      /* Full-bleed map: slow settle + vertical drift */
-      gsap.fromTo(
-        "[data-map]",
-        { scale: 1.18, yPercent: -5 },
-        {
-          scale: 1.02,
-          yPercent: 5,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#konum",
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
 
       ScrollTrigger.refresh();
 
@@ -386,31 +376,14 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         </div>
       </section>
 
-      {/* ---- 05 · Konum — full-bleed map (light) ---- */}
-      <section id="konum" data-lsec data-theme-sec data-bg="light" className="relative overflow-hidden bg-snow text-snow">
-        {/* Map covers the whole section background */}
-        <div
-          className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)]"
-          aria-hidden
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            data-map
-            src={location.mapImage}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="h-full w-full object-cover will-change-transform"
-          />
-          {/* The map fades to TRANSPARENT at its edges (CSS mask), so it
-              blends into whatever the morphing page background currently is —
-              dark on the way in, light once the section owns the viewport.
-              Flawless both directions. */}
-          <div className="absolute inset-0 bg-obsidian-950/[0.05]" />
-        </div>
-
-        {/* Full-bleed map only — no overlay card (human directive 2026-08-24) */}
-        <div className="relative min-h-[100svh]" />
+      {/* ---- 05 · Konum — interactive Google Maps (dark) ---- */}
+      <section
+        id="konum"
+        data-theme-sec
+        data-bg="dark"
+        className="relative overflow-hidden bg-obsidian-950 text-snow"
+      >
+        <LocationMap />
       </section>
 
       {/* ---- 06 · CTA band (dark) ---- */}
