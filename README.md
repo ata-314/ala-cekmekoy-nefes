@@ -33,15 +33,11 @@ ffmpeg -i public/assets/video/hero.mp4 -frames:v 1 -q:v 2 public/assets/video/po
 
 Everything editable lives in **`src/content/project.ts`** — one typed file: identity, SEO meta, all panel copy, stats, advantages, gallery list, unit types, form labels and KVKK text. Copy is distilled from the client's content guide (PAS flow: Çekmeköy → micro-location → project → residence → value → launch); facts like 14.300 m² / 9 blocks / 72 units / 197–333 m² come straight from it. Still pending from the client: sales phone number and the real KVKK document link.
 
-## Konum section — Google Maps setup
+## Konum section — Google My Maps, no API key
 
-The location section is a live Google Maps experience (lazy-loaded, client-only). Without an API key it falls back to the static map render, so the section never breaks.
+The location section embeds the client's public Google My Maps document directly. It is interactive, lazy-loaded and client-only, but uses no Google Cloud project, billing account, API key or Map ID. The brand-owned layer around the embed adds the cinematic focus animation, approach arrows, project reticle, coordinate rail and custom controls. The original static render remains the network-error fallback.
 
-1. In Google Cloud Console create an API key, **restrict it by HTTP referrer** (your production + preview domains) and enable only **Maps JavaScript API** and **Routes API**.
-2. Create a **Map ID** (Map management) and style it in the console: dark, low-saturation ground in the site's obsidian tones, visible green/forest areas, reduced business POI labels, readable main roads. Advanced Markers require a Map ID — dev falls back to `DEMO_MAP_ID`, production must set the real one.
-3. Copy `.env.example` → `.env.local` and fill `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` + `NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID` (set the same vars in Vercel).
-
-All map data lives in `src/content/mapData.ts`. The project coordinate (41.0378312, 29.1528651) was verified from the client's Google My Maps KML (archived in the agent workspace). **Route origins and surrounding POIs are intentionally empty** — the My Maps document defines none, and no geodata is invented. Add verified entries to `ROUTES` / `POIS` (or to the My Maps doc) and the route chips, animated polylines with drifting arrows, and category filters activate automatically.
+All URLs and verified location data live in `src/content/mapData.ts`. The project coordinate (41.0378312, 29.1528651) came from the client's My Maps KML. To change the actual map, update the public My Maps document; the site will reflect those map edits without a code deployment. Keep its sharing setting at “anyone with the link can view” so the embed stays available.
 
 ## Where does the form data go?
 

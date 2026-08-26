@@ -16,11 +16,11 @@ import {
 import dynamic from "next/dynamic";
 import MosaicGallery from "./MosaicGallery";
 
-/* Client-only, lazy: the Google Maps experience loads only in the browser
-   and only as the section nears the viewport (its own IO gate inside). */
+/* Client-only and lazy: the keyless Google My Maps embed starts loading only
+   as the section nears the viewport (its own IO gate inside). */
 const LocationMap = dynamic(() => import("./LocationMap"), {
   ssr: false,
-  loading: () => <div className="ala-map-skeleton h-[80svh] lg:h-[100svh]" />,
+  loading: () => <div className="h-[94svh] min-h-[700px] bg-obsidian-950 lg:h-[100svh]" />,
 });
 import SmartImage from "@/components/SmartImage";
 import Footer from "./Footer";
@@ -376,7 +376,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         </div>
       </section>
 
-      {/* ---- 05 · Konum — interactive Google Maps (dark) ---- */}
+      {/* ---- 05 · Konum — interactive, keyless Google My Maps ---- */}
       <section
         id="konum"
         data-theme-sec
