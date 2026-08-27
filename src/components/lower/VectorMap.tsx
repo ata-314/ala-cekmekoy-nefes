@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -15,8 +10,17 @@ import "maplibre-gl/dist/maplibre-gl.css";
    bundle instead. Keep public/vendor/maplibre-gl-worker.mjs in sync when
    upgrading maplibre-gl. */
 maplibregl.setWorkerUrl("/vendor/maplibre-gl-worker.mjs");
-import { brandMapStyle, CAMERA_FLIGHT } from "@/content/mapStyle";
-import { mapCopy, PROJECT_LOCATION } from "@/content/mapData";
+
+import {
+  BRAND_ICONS,
+  brandMapStyle,
+  CAMERA_FLIGHT,
+  FOREST_PATTERN_SVG,
+  FOREST_TEXTURE_LAYER,
+  POI_LAYER,
+} from "@/content/mapStyle";
+import { PROJECT_LOCATION } from "@/content/mapData";
+import { assets, identity } from "@/content/project";
 
 export type VectorMapHandle = {
   /** "Konuma Dön": short cinematic return to the project pin. */
@@ -25,7 +29,7 @@ export type VectorMapHandle = {
   zoomOut: () => void;
 };
 
-/* Page-load-scoped guards: re-renders and remounts never replay the long
+/* Page-load-scoped guard: re-renders and remounts never replay the long
    intro flight (client brief). */
 let flightPlayed = false;
 
@@ -34,12 +38,26 @@ const PROJECT_LNGLAT: [number, number] = [
   PROJECT_LOCATION.lat,
 ];
 
+/** Decode an inline SVG into an <img> usable by map.addImage(). */
+function loadSvgImage(svg: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.trim())}`;
+  });
+}
+
 /**
- * Fully self-controlled vector map (MapLibre GL on OpenFreeMap tiles — no
- * API key, production-allowed). The custom style keeps forests green, urban
- * fabric distinct, majors readable and POIs off entirely. Opens on a Türkiye
- * overview and dives to the project in one continuous flight; any user
- * gesture cancels it and hands over control.
+ * Fully self-controlled vector map (MapLibre GL on OpenFreeMap tiles — no API
+ * key, production-allowed). Custom style: green forests with a woodland
+ * texture, distinct urban fabric, readable majors, curated nearby places with
+ * brand icons, and no pond/business clutter. Opens on a Türkiye overview and
+ * dives to the project; any gesture cancels the flight and hands over control.
+ *
+ * Robustness (client: "bazı bilgisayarlarda çalışmıyor"): WebGL2 is checked up
+ * front, transient tile errors never abort the map, a hard load timeout falls
+ * back to the embed, and the render budget adapts to the machine.
  */
 const VectorMap = forwardRef<
   VectorMapHandle,
@@ -47,6 +65,7 @@ const VectorMap = forwardRef<
 >(function VectorMap({ onReady, onFail, onFocusStart }, ref) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
+  const endPitchRef = useRef<number>(CAMERA_FLIGHT.end.pitch);
 
   useImperativeHandle(ref, () => ({
     focus() {
@@ -55,7 +74,9 @@ const VectorMap = forwardRef<
       onFocusStart?.();
       map.flyTo({
         center: PROJECT_LNGLAT,
-        ...CAMERA_FLIGHT.end,
+        zoom: CAMERA_FLIGHT.end.zoom,
+        pitch: endPitchRef.current,
+        bearing: CAMERA_FLIGHT.end.bearing,
         duration: 1900,
         essential: true,
       });
@@ -72,35 +93,60 @@ const VectorMap = forwardRef<
     const container = containerRef.current;
     if (!container) return;
 
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    const skipFlight = flightPlayed || reduced;
-
-    let map: maplibregl.Map;
-    let io: IntersectionObserver | null = null;
     let failed = false;
     let loaded = false;
+    let disposed = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
     const fail = () => {
-      if (failed) return;
+      if (failed || disposed) return;
       failed = true;
       onFail();
     };
 
+    /* MapLibre 6 needs WebGL2. Machines with it disabled (old drivers, HW
+       acceleration off) go straight to the embed fallback instead of showing
+       a dead canvas. */
+    try {
+      const probe = document.createElement("canvas");
+      if (!probe.getContext("webgl2")) {
+        fail();
+        return;
+      }
+    } catch {
+      fail();
+      return;
+    }
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const cores =
+      typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? 4) : 4;
+    /* Render budget: weaker machines and phones get a lighter canvas, a
+       shallower camera and a shorter flight — the stutter reported on some
+       desktops came from a full-DPR pitched canvas streaming tiles. */
+    const lowEnd = cores <= 4 || coarse;
+    const endPitch = lowEnd ? 34 : CAMERA_FLIGHT.end.pitch;
+    const flightMs = lowEnd ? 5200 : CAMERA_FLIGHT.durationMs;
+    endPitchRef.current = endPitch;
+
+    const skipFlight = flightPlayed || reduced;
+
+    let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
         container,
         style: structuredClone(brandMapStyle),
         center: skipFlight ? PROJECT_LNGLAT : CAMERA_FLIGHT.start.center,
         zoom: skipFlight ? CAMERA_FLIGHT.end.zoom : CAMERA_FLIGHT.start.zoom,
-        pitch: skipFlight ? CAMERA_FLIGHT.end.pitch : CAMERA_FLIGHT.start.pitch,
-        bearing: skipFlight
-          ? CAMERA_FLIGHT.end.bearing
-          : CAMERA_FLIGHT.start.bearing,
+        pitch: skipFlight ? endPitch : CAMERA_FLIGHT.start.pitch,
+        bearing: skipFlight ? CAMERA_FLIGHT.end.bearing : CAMERA_FLIGHT.start.bearing,
         attributionControl: { compact: true },
         cooperativeGestures: true,
-        fadeDuration: 220,
+        renderWorldCopies: false,
+        maxTileCacheSize: 48,
+        fadeDuration: 200,
+        maxPitch: 60,
         locale: {
           "CooperativeGesturesHandler.WindowsHelpText":
             "Haritayı yakınlaştırmak için Ctrl + kaydırın",
@@ -116,20 +162,34 @@ const VectorMap = forwardRef<
     }
     mapRef.current = map;
 
-    /* Hard failures before first paint → fallback. Later tile hiccups are
-       tolerated (map already useful). */
-    map.on("error", (e: { error?: unknown }) => {
-      if (!loaded && e.error) fail();
-    });
+    /* Cap the drawing buffer: a 3× DPR pitched canvas is the single biggest
+       cause of frame drops on integrated graphics. */
+    const dpr = window.devicePixelRatio || 1;
+    map.setPixelRatio(Math.min(dpr, lowEnd ? 1 : 1.6));
 
-    /* Project pin: glow core + soft pulse + label chip. */
+    /* Transient tile/glyph errors must NOT kill the map — earlier versions
+       fell back to the iframe on a single 404 during load. */
+    map.on("error", () => {});
+
+    /* Hard timeout: if the style never finishes (blocked worker, offline
+       tiles), show the working fallback instead of a blank frame. */
+    timers.push(
+      setTimeout(() => {
+        if (!loaded) fail();
+      }, 14000)
+    );
+
+    /* Project marker: exact-point core + pulse + the real brand logo card. */
     const pinEl = document.createElement("div");
     pinEl.className = "ala-pin";
     pinEl.innerHTML = `
+      <span class="ala-pin-card">
+        <img src="${assets.logo}" alt="" />
+      </span>
+      <span class="ala-pin-stem" aria-hidden="true"></span>
       <span class="ala-pin-pulse" aria-hidden="true"></span>
-      <span class="ala-pin-glow" aria-hidden="true"></span>
-      <span class="ala-pin-core" aria-hidden="true"></span>
-      <span class="ala-pin-label">${mapCopy.projectLabel}</span>`;
+      <span class="ala-pin-core" aria-hidden="true"></span>`;
+    pinEl.setAttribute("aria-label", identity.name);
     const marker = new maplibregl.Marker({
       element: pinEl,
       anchor: "center",
@@ -137,17 +197,46 @@ const VectorMap = forwardRef<
 
     const showPin = () => pinEl.classList.add("is-shown");
 
+    /* Brand imagery: POI chips + woodland texture, then the layers that use
+       them (added after the images exist so MapLibre never warns). */
+    const addBrandImagery = async () => {
+      try {
+        const entries = await Promise.all(
+          Object.entries(BRAND_ICONS).map(
+            async ([id, svg]) => [id, await loadSvgImage(svg)] as const
+          )
+        );
+        if (disposed || !map.getStyle()) return;
+        entries.forEach(([id, img]) => {
+          if (!map.hasImage(id)) map.addImage(id, img, { pixelRatio: 2 });
+        });
+
+        const forest = await loadSvgImage(FOREST_PATTERN_SVG);
+        if (disposed || !map.getStyle()) return;
+        if (!map.hasImage("ala-forest"))
+          map.addImage("ala-forest", forest, { pixelRatio: 2 });
+
+        if (!map.getLayer(FOREST_TEXTURE_LAYER.id))
+          map.addLayer(FOREST_TEXTURE_LAYER, "landuse-urban");
+        if (!map.getLayer(POI_LAYER.id)) map.addLayer(POI_LAYER);
+      } catch {
+        /* Imagery is decoration — the map stays usable without it. */
+      }
+    };
+
     map.on("load", () => {
+      if (disposed) return;
       loaded = true;
       onReady();
       marker.addTo(map);
+      void addBrandImagery();
+
       if (skipFlight) {
         flightPlayed = true;
         showPin();
         return;
       }
 
-      /* Cinematic dive once the section is actually on screen. */
       let cancelled = false;
       const cancel = () => {
         if (cancelled) return;
@@ -160,29 +249,42 @@ const VectorMap = forwardRef<
         container.addEventListener(ev, cancel, { once: true, passive: true })
       );
 
-      io = new IntersectionObserver(
+      const io = new IntersectionObserver(
         (entries) => {
           if (!entries.some((en) => en.isIntersecting) || cancelled) return;
-          io?.disconnect();
+          io.disconnect();
+
+          /* Fly level (pitch 0) — a pitched camera streams far more tiles and
+             is what made the dive stutter. The tilt eases in on arrival. */
           map.flyTo({
             center: PROJECT_LNGLAT,
-            ...CAMERA_FLIGHT.end,
-            duration: CAMERA_FLIGHT.durationMs,
-            curve: 1.42,
+            zoom: CAMERA_FLIGHT.end.zoom,
+            bearing: CAMERA_FLIGHT.end.bearing,
+            pitch: 0,
+            duration: flightMs,
+            curve: 1.45,
             essential: true,
           });
-          map.once("moveend", () => {
+
+          const settle = () => {
+            if (cancelled || disposed) return;
             flightPlayed = true;
             showPin();
-          });
+            map.easeTo({ pitch: endPitch, duration: 1400, essential: true });
+          };
+          map.once("moveend", settle);
+          /* Safety net: if moveend never arrives, the pin still appears. */
+          timers.push(setTimeout(settle, flightMs + 2500));
         },
-        { threshold: 0.3 }
+        { threshold: 0.25 }
       );
       io.observe(container);
+      timers.push(setTimeout(() => io.disconnect(), 60000));
     });
 
     return () => {
-      io?.disconnect();
+      disposed = true;
+      timers.forEach(clearTimeout);
       marker.remove();
       map.remove();
       mapRef.current = null;

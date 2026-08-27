@@ -119,7 +119,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
           className={`ala-header-shell flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full py-2.5 pl-6 pr-2.5 transition-all duration-500 sm:gap-6 sm:pl-8 lg:max-w-[56rem] ${
             isLight
               ? "border border-obsidian-950/10 bg-white/80 shadow-[0_18px_50px_-28px_rgba(0,1,46,0.35)] backdrop-blur-xl"
-              : "glass bg-obsidian-950/90"
+              : "glass"
           }`}
         >
           <button
