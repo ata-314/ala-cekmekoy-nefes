@@ -81,7 +81,8 @@ export default function Header({ onContact }: { onContact: () => void }) {
     scrollToProgress(0);
   };
 
-  const isLight = active === "konum";
+  /* The navigation remains the brand's dark anchor in every section. */
+  const isLight = false;
 
   const itemClass = (anchor: string) =>
     `rounded-full px-5 py-2.5 text-[0.72rem] font-semibold uppercase tracking-[0.2em] transition-colors duration-300 ${
@@ -115,10 +116,10 @@ export default function Header({ onContact }: { onContact: () => void }) {
       <header className="fixed inset-x-0 top-4 z-40 flex justify-center px-4 sm:top-5">
         {/* Apple-style floating pill: soft radius, centered, frosted */}
         <div
-          className={`flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full py-2.5 pl-6 pr-2.5 transition-all duration-500 sm:gap-6 sm:pl-8 lg:max-w-[56rem] ${
+          className={`ala-header-shell flex w-full max-w-[46rem] items-center justify-between gap-3 rounded-full py-2.5 pl-6 pr-2.5 transition-all duration-500 sm:gap-6 sm:pl-8 lg:max-w-[56rem] ${
             isLight
               ? "border border-obsidian-950/10 bg-white/80 shadow-[0_18px_50px_-28px_rgba(0,1,46,0.35)] backdrop-blur-xl"
-              : "glass bg-obsidian-950/35"
+              : "glass bg-obsidian-950/90"
           }`}
         >
           <button

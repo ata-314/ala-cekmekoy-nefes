@@ -38,6 +38,7 @@ export const mapCopy = {
   explore: "Etkileşimli Harita",
   poster: "Poster Görünümü",
   hint: "Haritayı sürükleyin · Yakınlaştırmak için kaydırın",
+  autoReturn: "Gezintiden 8 sn sonra proje konumuna döner",
   roadLabel: "Şile Otoyolu bağlantısı",
   coordinateLabel: "Proje koordinatı",
   posterSeries: "A'LÂ · LOCATION SERIES 01",

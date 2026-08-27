@@ -384,6 +384,10 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         className="relative overflow-hidden bg-snow text-obsidian-950"
       >
         <LocationMap />
+        <div
+          aria-hidden
+          className="h-[22svh] min-h-36 bg-[linear-gradient(180deg,#f6f7fc_0%,#e1e3ed_36%,#555875_72%,#00012e_100%)]"
+        />
       </section>
 
       {/* ---- 06 · CTA band (dark) ---- */}

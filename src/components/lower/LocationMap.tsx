@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import type { VectorMapHandle } from "./VectorMap";
 import {
   DIRECTIONS_URL,
   mapCopy,
@@ -8,6 +10,9 @@ import {
   MY_MAPS_VIEW_URL,
   PROJECT_LOCATION,
 } from "@/content/mapData";
+
+/* MapLibre chunk loads only when the section is near the viewport. */
+const VectorMap = dynamic(() => import("./VectorMap"), { ssr: false });
 
 const ArrowIcon = () => (
   <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -30,12 +35,20 @@ const ExpandIcon = () => (
 
 export default function LocationMap() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const vectorRef = useRef<VectorMapHandle | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const returnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
+  /* "vector": self-controlled MapLibre scene (primary). "embed": the keyless
+     My Maps iframe kept as the working fallback. */
+  const [mode, setMode] = useState<"vector" | "embed">("vector");
   const [focusRun, setFocusRun] = useState(0);
   const [showFocus, setShowFocus] = useState(false);
+  const [navigating, setNavigating] = useState(false);
+  const [returning, setReturning] = useState(false);
 
   const startFocus = useCallback(() => {
     const reducedMotion = window.matchMedia(
@@ -69,28 +82,65 @@ export default function LocationMap() {
   useEffect(
     () => () => {
       if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
+      if (returnTimerRef.current) clearTimeout(returnTimerRef.current);
     },
     []
   );
 
   const handleMapLoad = useCallback(() => {
     setLoaded(true);
+    setNavigating(false);
+    setReturning(false);
   }, []);
 
+  const scheduleReturn = useCallback(() => {
+    setNavigating(true);
+    if (returnTimerRef.current) clearTimeout(returnTimerRef.current);
+    returnTimerRef.current = setTimeout(() => {
+      setReturning(true);
+      setLoaded(false);
+      setFocusRun((run) => run + 1);
+      startFocus();
+    }, 8000);
+  }, [startFocus]);
+
+  useEffect(() => {
+    const detectIframeFocus = () => {
+      setTimeout(() => {
+        if (document.activeElement === iframeRef.current) scheduleReturn();
+      }, 0);
+    };
+    window.addEventListener("blur", detectIframeFocus);
+    return () => window.removeEventListener("blur", detectIframeFocus);
+  }, [scheduleReturn]);
+
   const focusProject = useCallback(() => {
+    if (vectorRef.current) {
+      vectorRef.current.focus();
+      startFocus();
+      return;
+    }
     setFailed(false);
+    setReturning(true);
     setLoaded(false);
     setFocusRun((run) => run + 1);
     startFocus();
   }, [startFocus]);
+
+  const vectorFailed = useCallback(() => {
+    setMode("embed");
+    setLoaded(false);
+  }, []);
 
   return (
     <div
       ref={sectionRef}
       className={`ala-location-map ${shouldLoad ? "is-presented" : ""} ${
         loaded ? "is-loaded" : ""
-      } ${showFocus ? "is-focusing" : ""}`}
-      aria-busy={shouldLoad && !loaded && !failed}
+      } ${showFocus ? "is-focusing" : ""} ${
+        navigating ? "is-navigating" : ""
+      } ${returning ? "is-returning" : ""}`}
+      aria-busy={shouldLoad && (!loaded || returning) && !failed}
     >
       <div className="ala-map-story">
         <div className="ala-map-kicker">
@@ -112,9 +162,19 @@ export default function LocationMap() {
       </div>
 
       <div className="ala-map-frame">
-        {shouldLoad && !failed && (
+        {mode === "vector" && shouldLoad && (
+          <VectorMap
+            ref={vectorRef}
+            onReady={() => setLoaded(true)}
+            onFail={vectorFailed}
+            onFocusStart={startFocus}
+          />
+        )}
+
+        {mode === "embed" && shouldLoad && !failed && (
           <iframe
             key={focusRun}
+            ref={iframeRef}
             src={MY_MAPS_EMBED_URL}
             title="A'lâ Çekmeköy Nefes etkileşimli Google haritası"
             className="ala-map-embed"
@@ -122,14 +182,45 @@ export default function LocationMap() {
             allowFullScreen
             referrerPolicy="no-referrer-when-downgrade"
             onLoad={handleMapLoad}
+            onFocus={scheduleReturn}
             onError={() => setFailed(true)}
           />
+        )}
+
+        {mode === "embed" && (
+        <svg
+          className="ala-map-zones"
+          viewBox="0 0 1000 700"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            className="ala-map-zone-forest"
+            d="M0 0H1000V292C915 318 836 278 752 301C664 325 613 382 524 348C439 315 366 296 286 337C198 382 101 345 0 316Z"
+          />
+          <path
+            className="ala-map-zone-city"
+            d="M0 392C124 359 215 393 318 374C433 352 501 372 596 337C706 297 800 350 1000 319V700H0Z"
+          />
+          <path
+            className="ala-map-zone-forest ala-map-zone-forest-secondary"
+            d="M0 448C94 414 162 432 227 472C174 530 96 558 0 536Z"
+          />
+          <text className="ala-map-zone-label ala-map-zone-label-forest" x="745" y="82">
+            ÇEKMEKÖY ORMANLARI
+          </text>
+          <text className="ala-map-zone-label ala-map-zone-label-city" x="775" y="620">
+            ŞEHİR DOKUSU
+          </text>
+        </svg>
         )}
 
         {shouldLoad && !loaded && !failed && (
           <div className="ala-map-loader" aria-live="polite">
             <span className="ala-map-loader-ring" />
-            <span>Canlı harita hazırlanıyor</span>
+            <span>
+              {returning ? "A'lâ konumuna dönülüyor" : "Canlı harita hazırlanıyor"}
+            </span>
           </div>
         )}
 
@@ -142,7 +233,7 @@ export default function LocationMap() {
 
         {/* Label wash: white radial veil, transparent over the project —
             peripheral street/business labels dissolve into the canvas */}
-        <div className="ala-map-wash" aria-hidden="true" />
+        {mode === "embed" && <div className="ala-map-wash" aria-hidden="true" />}
         <div className="ala-map-vignette" aria-hidden="true" />
         <div className="ala-map-grain" aria-hidden="true" />
 
@@ -187,15 +278,51 @@ export default function LocationMap() {
           {mapCopy.roadLabel}
         </div>
 
-        <div className="ala-map-focus" aria-hidden="true">
-          <span className="ala-map-focus-orbit ala-map-focus-orbit-one" />
-          <span className="ala-map-focus-orbit ala-map-focus-orbit-two" />
-          <span className="ala-map-focus-dot" />
-          <strong>{mapCopy.projectLabel}</strong>
-        </div>
+        {mode === "embed" && (
+          <div className="ala-map-focus" aria-hidden="true">
+            <span className="ala-map-focus-orbit ala-map-focus-orbit-one" />
+            <span className="ala-map-focus-orbit ala-map-focus-orbit-two" />
+            <span className="ala-map-focus-dot" />
+            <strong>
+              <span>PROJE KONUMU</span>
+              {mapCopy.projectLabel}
+            </strong>
+          </div>
+        )}
+
+        {mode === "embed" && loaded && (
+          <div className="ala-map-return-status" aria-live="polite">
+            <span />
+            {mapCopy.autoReturn}
+          </div>
+        )}
       </div>
 
       <div className="ala-map-actions" aria-label="Harita kontrolleri">
+        {mode === "vector" && (
+          <>
+            <button
+              type="button"
+              onClick={() => vectorRef.current?.zoomIn()}
+              title="Yakınlaştır"
+              aria-label="Yakınlaştır"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 4v12M4 10h12" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => vectorRef.current?.zoomOut()}
+              title="Uzaklaştır"
+              aria-label="Uzaklaştır"
+            >
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h12" />
+              </svg>
+            </button>
+          </>
+        )}
         <button type="button" onClick={focusProject} title={mapCopy.focus}>
           <FocusIcon />
           <span>{mapCopy.focus}</span>
