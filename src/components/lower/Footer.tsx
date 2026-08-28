@@ -4,7 +4,7 @@ import { identity, nav, form, footer } from "@/content/project";
 /** Corporate footer — obsidian ground, white logotype, contact from the brand book. */
 export default function Footer() {
   return (
-    <footer className="border-t border-snow/10 bg-obsidian-950 px-5 pb-10 pt-16 text-snow sm:px-8 sm:pt-20">
+    <footer className="bg-obsidian-950 px-5 pb-10 pt-12 text-snow sm:px-8 sm:pt-14">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <Logo className="h-16" />

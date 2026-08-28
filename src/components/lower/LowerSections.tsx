@@ -384,14 +384,10 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         className="relative overflow-hidden bg-snow text-obsidian-950"
       >
         <LocationMap />
-        <div
-          aria-hidden
-          className="h-[22svh] min-h-36 bg-[linear-gradient(180deg,#f6f7fc_0%,#e1e3ed_36%,#555875_72%,#00012e_100%)]"
-        />
       </section>
 
       {/* ---- 06 · CTA band (dark) ---- */}
-      <section data-lsec data-theme-sec data-bg="dark" className="bg-obsidian-950 px-5 py-24 text-center text-snow sm:px-8 sm:py-32">
+      <section data-lsec data-theme-sec data-bg="dark" className="bg-obsidian-950 px-5 pb-14 pt-24 text-center text-snow sm:px-8 sm:pb-16 sm:pt-32">
         <p data-lreveal className="mb-4 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-snow/50">
           {finalCta.eyebrow}
         </p>

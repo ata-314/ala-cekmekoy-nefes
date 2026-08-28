@@ -649,16 +649,32 @@ select.field option {
    the client's verified location artwork as an editorial map poster. ---- */
 .ala-location-map {
   min-height: 760px;
-  /* Top edge dissolves into the morphing page background, so arriving from
-     the dark gallery the theme whitens seamlessly — no hard seam. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 7rem);
-  mask-image: linear-gradient(to bottom, transparent, black 7rem);
+  /* The paper ground lives on ::before so ONLY it dissolves at both edges —
+     masking the section itself faded the map and the meta strip too. Both
+     edges melt into the morphing page background: dark gallery above,
+     dark CTA below, no hard seam and no hand-painted gradient band. */
+  background: transparent;
+  color: var(--obsidian-950);
+}
+.ala-location-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
     linear-gradient(rgba(0, 1, 46, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 1, 46, 0.035) 1px, transparent 1px),
     var(--snow);
   background-size: 44px 44px;
-  color: var(--obsidian-950);
+  -webkit-mask-image: linear-gradient(
+    to bottom, transparent, black 7rem,
+    black calc(100% - 10rem), transparent
+  );
+  mask-image: linear-gradient(
+    to bottom, transparent, black 7rem,
+    black calc(100% - 10rem), transparent
+  );
 }
 .ala-map-frame {
   inset: 7.5rem 3rem 5.2rem clamp(29rem, 37vw, 34rem);
@@ -1196,16 +1212,32 @@ select.field option {
    the client's verified location artwork as an editorial map poster. ---- */
 .ala-location-map {
   min-height: 760px;
-  /* Top edge dissolves into the morphing page background, so arriving from
-     the dark gallery the theme whitens seamlessly — no hard seam. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 7rem);
-  mask-image: linear-gradient(to bottom, transparent, black 7rem);
+  /* The paper ground lives on ::before so ONLY it dissolves at both edges —
+     masking the section itself faded the map and the meta strip too. Both
+     edges melt into the morphing page background: dark gallery above,
+     dark CTA below, no hard seam and no hand-painted gradient band. */
+  background: transparent;
+  color: var(--obsidian-950);
+}
+.ala-location-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
     linear-gradient(rgba(0, 1, 46, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 1, 46, 0.035) 1px, transparent 1px),
     var(--snow);
   background-size: 44px 44px;
-  color: var(--obsidian-950);
+  -webkit-mask-image: linear-gradient(
+    to bottom, transparent, black 7rem,
+    black calc(100% - 10rem), transparent
+  );
+  mask-image: linear-gradient(
+    to bottom, transparent, black 7rem,
+    black calc(100% - 10rem), transparent
+  );
 }
 .ala-map-frame {
   inset: 7.5rem 3rem 5.2rem clamp(29rem, 37vw, 34rem);
@@ -1801,22 +1833,30 @@ select.field option {
 .ala-pin-card {
   position: absolute;
   z-index: 4;
-  bottom: calc(50% + 21px);
+  bottom: calc(50% + 24px);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
   display: grid;
   place-items: center;
-  padding: 0.5rem 0.95rem;
-  border-radius: 14px;
+  padding: 0.6rem 1.15rem;
+  border-radius: 17px;
   background: var(--obsidian-950);
   border: 1px solid rgba(246, 247, 252, 0.18);
   box-shadow: 0 16px 34px -14px rgba(0, 1, 46, 0.65);
 }
 .ala-pin-card img {
   display: block;
-  height: 1.9rem;
+  height: 2.7rem;
   width: auto;
   /* Tailwind preflight's max-width:100% resolves against a shrink-to-fit
      parent whose width depends on this image — it collapses the logo to 0. */
   max-width: none;
+}
+.ala-pin-card:hover,
+.ala-pin-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 44px -16px rgba(0, 1, 46, 0.75);
+  outline: none;
 }
 .ala-pin-card::after {
   content: "";
@@ -1834,8 +1874,8 @@ select.field option {
 }
 
 @media (max-width: 767px) {
-  .ala-pin-card { padding: 0.4rem 0.75rem; border-radius: 12px; }
-  .ala-pin-card img { height: 1.5rem; }
+  .ala-pin-card { padding: 0.5rem 0.9rem; border-radius: 14px; }
+  .ala-pin-card img { height: 2.1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

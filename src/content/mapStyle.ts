@@ -26,10 +26,11 @@ const GROUND = "#f2f3f7";
 const WATER = "#c9d7e4";
 const FOREST = "#c2dbbd";
 const GRASS = "#dcead6";
-const URBAN = "#e7e6ee";
+const URBAN = "#e2e0ee";
+const URBAN_DENSE = "#dcd9ea";
 const ROAD_MAJOR = "#ffffff";
-const ROAD_CASING = "#d3d2df";
-const ROAD_MINOR = "#eceaf2";
+const ROAD_CASING = "#bfbdd2";
+const ROAD_MINOR = "#ffffff";
 const INK = "#00012e";
 
 /** Turkish-first name expression used by every label layer. */
@@ -99,9 +100,21 @@ export const brandMapStyle: any = {
       filter: [
         "in",
         ["get", "class"],
-        ["literal", ["residential", "suburb", "neighbourhood", "commercial", "industrial", "retail"]],
+        ["literal", ["residential", "suburb", "neighbourhood"]],
       ],
-      paint: { "fill-color": URBAN, "fill-opacity": 0.6 },
+      paint: { "fill-color": URBAN, "fill-opacity": 0.95 },
+    },
+    {
+      id: "landuse-urban-dense",
+      type: "fill",
+      source: "omt",
+      "source-layer": "landuse",
+      filter: [
+        "in",
+        ["get", "class"],
+        ["literal", ["commercial", "industrial", "retail"]],
+      ],
+      paint: { "fill-color": URBAN_DENSE, "fill-opacity": 0.95 },
     },
 
     /* Water */
@@ -127,11 +140,27 @@ export const brandMapStyle: any = {
       type: "fill",
       source: "omt",
       "source-layer": "building",
-      minzoom: 14,
-      paint: { "fill-color": "#dedde8", "fill-opacity": 0.55 },
+      minzoom: 13,
+      paint: {
+        "fill-color": "#cdcadd",
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0.45, 16, 0.85],
+      },
     },
 
     /* Roads — minor first, majors on top */
+    {
+      id: "road-minor-casing",
+      type: "line",
+      source: "omt",
+      "source-layer": "transportation",
+      minzoom: 13,
+      filter: ["in", ["get", "class"], ["literal", ["minor", "service", "tertiary"]]],
+      paint: {
+        "line-color": ROAD_CASING,
+        "line-opacity": 0.55,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 13, 1.4, 16, 4.4],
+      },
+    },
     {
       id: "road-minor",
       type: "line",
@@ -141,7 +170,19 @@ export const brandMapStyle: any = {
       filter: ["in", ["get", "class"], ["literal", ["minor", "service", "tertiary"]]],
       paint: {
         "line-color": ROAD_MINOR,
-        "line-width": ["interpolate", ["linear"], ["zoom"], 12.5, 0.4, 16, 2.4],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 12.5, 0.6, 16, 3],
+      },
+    },
+    {
+      id: "road-secondary-casing",
+      type: "line",
+      source: "omt",
+      "source-layer": "transportation",
+      minzoom: 10,
+      filter: ["in", ["get", "class"], ["literal", ["secondary"]]],
+      paint: {
+        "line-color": ROAD_CASING,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.6, 15, 6.4],
       },
     },
     {
@@ -153,7 +194,7 @@ export const brandMapStyle: any = {
       filter: ["in", ["get", "class"], ["literal", ["secondary"]]],
       paint: {
         "line-color": ROAD_MAJOR,
-        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.7, 15, 3.6],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.9, 15, 4.4],
       },
     },
     {
@@ -164,7 +205,7 @@ export const brandMapStyle: any = {
       filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary"]]],
       paint: {
         "line-color": ROAD_CASING,
-        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 1.2, 11, 3.4, 15, 8.5],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 1.4, 11, 4.4, 15, 11.5],
       },
     },
     {
@@ -175,7 +216,7 @@ export const brandMapStyle: any = {
       filter: ["in", ["get", "class"], ["literal", ["motorway", "trunk", "primary"]]],
       paint: {
         "line-color": ROAD_MAJOR,
-        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.7, 11, 2.2, 15, 6],
+        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.9, 11, 3, 15, 8.5],
       },
     },
 
@@ -224,13 +265,14 @@ export const brandMapStyle: any = {
       layout: {
         "symbol-placement": "line",
         "text-field": NAME,
-        "text-font": FONT_REG,
-        "text-size": 10.5,
+        "text-font": FONT_BOLD,
+        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 10, 16, 12.5],
+        "text-letter-spacing": 0.04,
       },
       paint: {
-        "text-color": "rgba(0,1,46,0.62)",
-        "text-halo-color": "rgba(246,247,252,0.9)",
-        "text-halo-width": 1.2,
+        "text-color": "rgba(0,1,46,0.8)",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.8,
       },
     },
     {
@@ -268,33 +310,49 @@ export const brandMapStyle: any = {
    Rendered from inline SVG (no sprite dependency, no extra requests).
 --------------------------------------------------------------------------- */
 
-const chip = (glyph: string) => `
-<svg xmlns="http://www.w3.org/2000/svg" width="66" height="66" viewBox="0 0 66 66">
-  <circle cx="33" cy="33" r="24" fill="#ffffff" stroke="rgba(0,1,46,0.16)" stroke-width="1.6"/>
-  <g transform="translate(21 21) scale(1)" fill="none" stroke="${INK}"
-     stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${glyph}</g>
+/**
+ * Map chip: a white disc with a soft drop shadow and a filled glyph — filled
+ * shapes stay legible at map scale where hairline strokes disappear.
+ */
+const chip = (glyph: string, tint: string = INK) => `
+<svg xmlns="http://www.w3.org/2000/svg" width="84" height="84" viewBox="0 0 84 84">
+  <defs>
+    <filter id="d" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.6"
+        flood-color="#00012e" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <circle cx="42" cy="42" r="27" fill="#ffffff"
+    stroke="rgba(0,1,46,0.16)" stroke-width="1.6" filter="url(#d)"/>
+  <g transform="translate(30 30)" fill="${tint}">${glyph}</g>
 </svg>`;
 
-/** Curated POI icon set — one chip per meaningful category. */
+/** Curated POI icon set — one filled chip per meaningful category. */
 export const BRAND_ICONS: Record<string, string> = {
-  "ala-education": chip(
-    `<path d="M2 8.4 12 3.6l10 4.8-10 4.8L2 8.4Z"/><path d="M6.6 10.6v4.6c0 1.5 2.4 2.6 5.4 2.6s5.4-1.1 5.4-2.6v-4.6"/>`
-  ),
-  "ala-health": chip(
-    `<path d="M9.6 3.6h4.8v6h6v4.8h-6v6H9.6v-6h-6V9.6h6v-6Z"/>`
-  ),
-  "ala-transit": chip(
-    `<rect x="5.4" y="3.2" width="13.2" height="13.2" rx="3.4"/><path d="M5.4 10.4h13.2"/><path d="M9 20.4l-1.8 1.8M15 20.4l1.8 1.8"/><circle cx="9.2" cy="13.4" r=".9" fill="${INK}" stroke="none"/><circle cx="14.8" cy="13.4" r=".9" fill="${INK}" stroke="none"/>`
-  ),
-  "ala-shopping": chip(
-    `<path d="M5 7.8h14l-1.3 12.4H6.3L5 7.8Z"/><path d="M9.2 7.8V6a2.8 2.8 0 0 1 5.6 0v1.8"/>`
-  ),
-  "ala-park": chip(
-    `<path d="M12 20.4v-6.2"/><path d="M12 14.2c0-4 2.8-6.6 7-6.6 0 4-2.6 6.6-7 6.6Z"/><path d="M12 15.4c0-4.4-3-7.2-7.4-7.2 0 4.4 2.8 7.2 7.4 7.2Z"/>`
-  ),
-  "ala-worship": chip(
-    `<path d="M6 20.4v-8.2a6 6 0 0 1 12 0v8.2"/><path d="M4.4 20.4h15.2"/><path d="M12 6.2V3.4"/>`
-  ),
+  "ala-education": chip(`
+    <path d="M12 2.9 1.4 8.2 12 13.5l10.6-5.3L12 2.9Z"/>
+    <path d="M5.9 11.3v3.6c0 1.9 2.9 3.3 6.1 3.3s6.1-1.4 6.1-3.3v-3.6L12 14.6l-6.1-3.3Z"/>
+    <path d="M21.1 9.2h1.3v5.2h-1.3z"/>`),
+  "ala-health": chip(`
+    <rect x="9.9" y="3.6" width="4.2" height="16.8" rx="1.7"/>
+    <rect x="3.6" y="9.9" width="16.8" height="4.2" rx="1.7"/>`),
+  "ala-transit": chip(`
+    <path d="M8.4 2.8h7.2A3.6 3.6 0 0 1 19.2 6.4v6.4a3.6 3.6 0 0 1-3.6 3.6H8.4a3.6 3.6 0 0 1-3.6-3.6V6.4A3.6 3.6 0 0 1 8.4 2.8Z"/>
+    <rect x="7.2" y="5.6" width="9.6" height="4.4" rx="1.2" fill="#ffffff"/>
+    <circle cx="9.2" cy="12.9" r="1.25" fill="#ffffff"/>
+    <circle cx="14.8" cy="12.9" r="1.25" fill="#ffffff"/>
+    <path d="M8.9 17.4 6.6 21h1.9l1.9-3.6H8.9Zm6.2 0 2.3 3.6h-1.9l-1.9-3.6h1.5Z"/>`),
+  "ala-shopping": chip(`
+    <path d="M5.4 7.2h13.2l-1.15 11.6a2.2 2.2 0 0 1-2.2 2H8.75a2.2 2.2 0 0 1-2.2-2L5.4 7.2Z"/>
+    <path d="M9.2 8.6V6.1a2.8 2.8 0 0 1 5.6 0v2.5" fill="none"
+      stroke="#ffffff" stroke-width="1.9" stroke-linecap="round"/>`),
+  "ala-park": chip(`
+    <path d="M12 2.6 17.9 11h-3.3l4.2 6.6H12.75V21h-1.5v-3.4H5.2L9.4 11H6.1L12 2.6Z"/>`,
+    "#2f6b41"),
+  "ala-worship": chip(`
+    <path d="M12 3.6c3.1 1.7 5 4.1 5 6.8v8.2H7v-8.2c0-2.7 1.9-5.1 5-6.8Z"/>
+    <rect x="4.4" y="18" width="15.2" height="2.4" rx="1.2"/>
+    <circle cx="12" cy="2.4" r="1.1"/>`),
 };
 
 /** Repeating woodland texture painted over forest polygons. */
@@ -369,21 +427,21 @@ export const POI_LAYER: AnyLayer = {
       ["place_of_worship"], "ala-worship",
       "ala-park",
     ],
-    "icon-size": ["interpolate", ["linear"], ["zoom"], 13, 0.5, 16.5, 0.72],
+    "icon-size": ["interpolate", ["linear"], ["zoom"], 13, 0.55, 16.5, 0.92],
     "icon-allow-overlap": false,
     "text-optional": true,
     "text-field": NAME,
-    "text-font": FONT_REG,
-    "text-size": ["interpolate", ["linear"], ["zoom"], 13, 10, 16.5, 12],
+    "text-font": FONT_BOLD,
+    "text-size": ["interpolate", ["linear"], ["zoom"], 13, 10.5, 16.5, 13],
     "text-anchor": "top",
-    "text-offset": [0, 1.05],
+    "text-offset": [0, 1.15],
     "text-max-width": 9,
     "symbol-sort-key": ["get", "rank"],
   },
   paint: {
-    "text-color": "rgba(0,1,46,0.74)",
-    "text-halo-color": "rgba(246,247,252,0.94)",
-    "text-halo-width": 1.5,
+    "text-color": "rgba(0,1,46,0.88)",
+    "text-halo-color": "#ffffff",
+    "text-halo-width": 2,
     "icon-opacity": ["interpolate", ["linear"], ["zoom"], 13, 0, 13.8, 1],
     "text-opacity": ["interpolate", ["linear"], ["zoom"], 13.4, 0, 14.2, 1],
   },
@@ -395,7 +453,7 @@ export const POI_LAYER: AnyLayer = {
  */
 export const CAMERA_FLIGHT = {
   start: { center: [35.2, 39.0] as [number, number], zoom: 4.5, pitch: 0, bearing: 0 },
-  end: { zoom: 16.0, pitch: 50, bearing: -14 },
+  end: { zoom: 15.6, pitch: 50, bearing: -14 },
   /** Trimmed on low-end machines by the component. */
   durationMs: 7600,
 } as const;

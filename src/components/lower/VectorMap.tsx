@@ -197,6 +197,34 @@ const VectorMap = forwardRef<
 
     const showPin = () => pinEl.classList.add("is-shown");
 
+    /* Clicking the logo flies straight back to the project. */
+    const flyHome = () =>
+      map.flyTo({
+        center: PROJECT_LNGLAT,
+        zoom: CAMERA_FLIGHT.end.zoom,
+        pitch: endPitch,
+        bearing: CAMERA_FLIGHT.end.bearing,
+        duration: 1500,
+        essential: true,
+      });
+    const card = pinEl.querySelector<HTMLElement>(".ala-pin-card");
+    if (card) {
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("title", `${identity.name} — konuma odaklan`);
+      card.addEventListener("click", (e) => {
+        e.stopPropagation();
+        onFocusStart?.();
+        flyHome();
+      });
+      card.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
+        onFocusStart?.();
+        flyHome();
+      });
+    }
+
     /* Brand imagery: POI chips + woodland texture, then the layers that use
        them (added after the images exist so MapLibre never warns). */
     const addBrandImagery = async () => {
