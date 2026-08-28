@@ -31,15 +31,11 @@ export const DIRECTIONS_URL =
  * Named landmarks drawn on top of the map with a prominent brand pill —
  * for places the client wants called out that the map data does not name.
  *
- * VERIFICATION STATUS (2026-08-26): "Lens Çekmeköy" could not be located in
- * any source we can verify against — it is absent from the OpenMapTiles/OSM
- * data the map renders (nearest named retail: CarrefourSA ~0.4 km), absent
- * from OSM Nominatim, and absent from the client's own My Maps document,
- * which still contains exactly one placemark (the project). Per the
- * no-fabricated-geodata rule it is therefore NOT listed here.
- *
- * To make it appear: add its coordinate below (or drop a pin for it in the
- * My Maps document and we re-import). Nothing else needs to change.
+ * "Lens Çekmeköy" is absent from the OpenMapTiles/OSM data the map renders,
+ * from OSM Nominatim and from the client's My Maps document, so its
+ * coordinate came directly from the client (2026-08-26). It sits ~77 m
+ * south-west of the project, matching the content guide's "projenin hemen
+ * arkasında". Nothing here is inferred from artwork.
  */
 export type Landmark = {
   name: string;
@@ -48,7 +44,13 @@ export type Landmark = {
   detail?: string;
 };
 
-export const LANDMARKS: Landmark[] = [];
+export const LANDMARKS: Landmark[] = [
+  {
+    name: "Lens Çekmeköy",
+    detail: "Market · Kafe · Restoran",
+    position: { lat: 41.03724616012578, lng: 29.152377925946414 },
+  },
+];
 
 export const mapCopy = {
   eyebrow: "Konum",

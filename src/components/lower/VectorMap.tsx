@@ -252,7 +252,12 @@ const VectorMap = forwardRef<
     }).setLngLat(PROJECT_LNGLAT);
 
     const pinInner = pinEl.querySelector<HTMLElement>(".ala-pin-inner");
-    const showPin = () => pinInner?.classList.add("is-shown");
+    const showPin = () => {
+      pinInner?.classList.add("is-shown");
+      landmarkMarkers.forEach((lm) =>
+        lm.getElement().querySelector(".ala-landmark-inner")?.classList.add("is-shown")
+      );
+    };
 
     /* Client-called-out landmarks the map data does not name. Rendered as
        prominent brand pills, clearly above the generic POI chips. */
@@ -260,12 +265,14 @@ const VectorMap = forwardRef<
       const el = document.createElement("div");
       el.className = "ala-landmark";
       el.innerHTML = `
-        <span class="ala-landmark-dot" aria-hidden="true"></span>
-        <span class="ala-landmark-body">
-          <strong>${lm.name}</strong>
-          ${lm.detail ? `<em>${lm.detail}</em>` : ""}
+        <span class="ala-landmark-inner">
+          <span class="ala-landmark-dot" aria-hidden="true"></span>
+          <span class="ala-landmark-body">
+            <strong>${lm.name}</strong>
+            ${lm.detail ? `<em>${lm.detail}</em>` : ""}
+          </span>
         </span>`;
-      return new maplibregl.Marker({ element: el, anchor: "left" }).setLngLat([
+      return new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([
         lm.position.lng,
         lm.position.lat,
       ]);

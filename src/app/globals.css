@@ -2066,29 +2066,49 @@ select.field option {
   font-size: 0.4rem;
 }
 
-/* ---- Named landmarks: prominent brand pill, above the generic POI chips ---- */
+/* ---- Named landmarks: prominent brand pill, above the generic POI chips.
+   The dot marks the exact point and the label hangs BELOW it — the project
+   card stacks above its own dot, and the two points can be under 80 m
+   apart, so opposite stacking keeps them clear of each other. ---- */
 .ala-landmark {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.34rem 0.7rem 0.34rem 0.4rem;
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.ala-landmark-inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 0.6s 0.25s ease,
+    transform 0.7s 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ala-landmark-inner.is-shown {
+  opacity: 1;
+  transform: scale(1);
+}
+.ala-landmark-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid var(--obsidian-950);
+  box-shadow: 0 4px 12px rgba(0, 1, 46, 0.4);
+}
+.ala-landmark-body {
+  position: absolute;
+  top: calc(50% + 11px);
+  display: grid;
+  padding: 0.32rem 0.7rem;
   border-radius: 999px;
   background: #ffffff;
   border: 1px solid rgba(0, 1, 46, 0.14);
-  box-shadow: 0 10px 24px -12px rgba(0, 1, 46, 0.45);
+  box-shadow: 0 12px 26px -14px rgba(0, 1, 46, 0.5);
+  line-height: 1.2;
+  text-align: center;
   white-space: nowrap;
-  transform: translateX(-6px);
-}
-.ala-landmark-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--obsidian-950);
-  box-shadow: 0 0 0 3.5px rgba(0, 1, 46, 0.12);
-}
-.ala-landmark-body {
-  display: grid;
-  line-height: 1.15;
 }
 .ala-landmark-body strong {
   font-size: 0.68rem;
@@ -2097,7 +2117,18 @@ select.field option {
   color: var(--obsidian-950);
 }
 .ala-landmark-body em {
-  font-size: 0.55rem;
+  font-size: 0.53rem;
   font-style: normal;
+  letter-spacing: 0.04em;
   color: rgba(0, 1, 46, 0.55);
+}
+
+@media (max-width: 640px) {
+  .ala-landmark-body { padding: 0.26rem 0.55rem; }
+  .ala-landmark-body strong { font-size: 0.6rem; }
+  .ala-landmark-body em { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ala-landmark-inner { transition: none; }
 }
