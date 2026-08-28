@@ -19,7 +19,7 @@ import {
   FOREST_TEXTURE_LAYER,
   POI_LAYER,
 } from "@/content/mapStyle";
-import { PROJECT_LOCATION } from "@/content/mapData";
+import { LANDMARKS, PROJECT_LOCATION } from "@/content/mapData";
 import { assets, identity } from "@/content/project";
 
 export type VectorMapHandle = {
@@ -254,6 +254,23 @@ const VectorMap = forwardRef<
     const pinInner = pinEl.querySelector<HTMLElement>(".ala-pin-inner");
     const showPin = () => pinInner?.classList.add("is-shown");
 
+    /* Client-called-out landmarks the map data does not name. Rendered as
+       prominent brand pills, clearly above the generic POI chips. */
+    const landmarkMarkers = LANDMARKS.map((lm) => {
+      const el = document.createElement("div");
+      el.className = "ala-landmark";
+      el.innerHTML = `
+        <span class="ala-landmark-dot" aria-hidden="true"></span>
+        <span class="ala-landmark-body">
+          <strong>${lm.name}</strong>
+          ${lm.detail ? `<em>${lm.detail}</em>` : ""}
+        </span>`;
+      return new maplibregl.Marker({ element: el, anchor: "left" }).setLngLat([
+        lm.position.lng,
+        lm.position.lat,
+      ]);
+    });
+
     /* Clicking the logo flies straight back to the project. */
     const flyHome = () =>
       map.flyTo({
@@ -314,6 +331,7 @@ const VectorMap = forwardRef<
       loaded = true;
       onReady();
       marker.addTo(map);
+      landmarkMarkers.forEach((lm) => lm.addTo(map));
       void addBrandImagery();
 
       if (skipFlight) {
@@ -394,6 +412,7 @@ const VectorMap = forwardRef<
       startIntroRef.current = null;
       timers.forEach(clearTimeout);
       marker.remove();
+      landmarkMarkers.forEach((lm) => lm.remove());
       map.remove();
       mapRef.current = null;
     };

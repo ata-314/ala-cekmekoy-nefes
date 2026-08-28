@@ -2065,3 +2065,39 @@ select.field option {
   bottom: 0.35rem;
   font-size: 0.4rem;
 }
+
+/* ---- Named landmarks: prominent brand pill, above the generic POI chips ---- */
+.ala-landmark {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.34rem 0.7rem 0.34rem 0.4rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 1, 46, 0.14);
+  box-shadow: 0 10px 24px -12px rgba(0, 1, 46, 0.45);
+  white-space: nowrap;
+  transform: translateX(-6px);
+}
+.ala-landmark-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--obsidian-950);
+  box-shadow: 0 0 0 3.5px rgba(0, 1, 46, 0.12);
+}
+.ala-landmark-body {
+  display: grid;
+  line-height: 1.15;
+}
+.ala-landmark-body strong {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--obsidian-950);
+}
+.ala-landmark-body em {
+  font-size: 0.55rem;
+  font-style: normal;
+  color: rgba(0, 1, 46, 0.55);
+}
