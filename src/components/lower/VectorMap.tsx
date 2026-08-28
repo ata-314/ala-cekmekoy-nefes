@@ -73,9 +73,14 @@ const VectorMap = forwardRef<
     interactive?: boolean;
     /** Separate guard per placement. */
     flightKey?: string;
-    /** Compact variant only: the map mounts early so tiles are warm, but the
-        camera waits for this to flip so the reveal lands with the panel. */
+    /** Gate the intro on the parent's signal instead of viewport geometry —
+        required inside the pinned hero, where every phase is geometrically
+        on screen the whole time (visibility:hidden still "intersects"). */
+    revealGated?: boolean;
+    /** Flips when the panel actually lands; fires the camera. */
     revealed?: boolean;
+    /** Override the dive length (the hero phase has its own budget). */
+    flightDurationMs?: number;
   }
 >(function VectorMap(
   {
@@ -85,7 +90,9 @@ const VectorMap = forwardRef<
     variant = "full",
     interactive = true,
     flightKey = "konum",
+    revealGated = false,
     revealed = false,
+    flightDurationMs,
   },
   ref
 ) {
@@ -170,7 +177,7 @@ const VectorMap = forwardRef<
        project — a country-wide dive is far too long for a hero phase. */
     const startZoom = compact ? 12.9 : CAMERA_FLIGHT.start.zoom;
     const startCenter = compact ? PROJECT_LNGLAT : CAMERA_FLIGHT.start.center;
-    const diveMs = compact ? 3200 : flightMs;
+    const diveMs = flightDurationMs ?? (compact ? 3200 : flightMs);
     const skipFlight = flightsPlayed.has(flightKey) || reduced;
 
     let map: maplibregl.Map;
@@ -182,7 +189,9 @@ const VectorMap = forwardRef<
         zoom: skipFlight ? CAMERA_FLIGHT.end.zoom : startZoom,
         pitch: skipFlight ? endPitch : CAMERA_FLIGHT.start.pitch,
         bearing: skipFlight ? CAMERA_FLIGHT.end.bearing : CAMERA_FLIGHT.start.bearing,
-        attributionControl: { compact: true },
+        /* OSM/ODbL requires credit; we render our own minimal line
+           instead of MapLibre's boxed control with its "i" toggle. */
+        attributionControl: false,
         interactive,
         cooperativeGestures: interactive,
         renderWorldCopies: false,
@@ -224,20 +233,26 @@ const VectorMap = forwardRef<
     /* Project marker: exact-point core + pulse + the real brand logo card. */
     const pinEl = document.createElement("div");
     pinEl.className = "ala-pin";
+    /* The reveal animates an INNER wrapper: MapLibre writes the marker's
+       own opacity as an inline style (terrain occlusion support), which no
+       stylesheet can override. */
     pinEl.innerHTML = `
-      <span class="ala-pin-card">
-        <img src="${assets.logo}" alt="" />
-      </span>
-      <span class="ala-pin-stem" aria-hidden="true"></span>
-      <span class="ala-pin-pulse" aria-hidden="true"></span>
-      <span class="ala-pin-core" aria-hidden="true"></span>`;
+      <span class="ala-pin-inner">
+        <span class="ala-pin-card">
+          <img src="${assets.logo}" alt="" />
+        </span>
+        <span class="ala-pin-stem" aria-hidden="true"></span>
+        <span class="ala-pin-pulse" aria-hidden="true"></span>
+        <span class="ala-pin-core" aria-hidden="true"></span>
+      </span>`;
     pinEl.setAttribute("aria-label", identity.name);
     const marker = new maplibregl.Marker({
       element: pinEl,
       anchor: "center",
     }).setLngLat(PROJECT_LNGLAT);
 
-    const showPin = () => pinEl.classList.add("is-shown");
+    const pinInner = pinEl.querySelector<HTMLElement>(".ala-pin-inner");
+    const showPin = () => pinInner?.classList.add("is-shown");
 
     /* Clicking the logo flies straight back to the project. */
     const flyHome = () =>
@@ -315,9 +330,14 @@ const VectorMap = forwardRef<
         showPin();
         flightsPlayed.add(flightKey);
       };
-      ["mousedown", "wheel", "touchstart"].forEach((ev) =>
-        container.addEventListener(ev, cancel, { once: true, passive: true })
-      );
+      /* Only a REAL gesture hands control over. MapLibre tags user-driven
+         camera events with `originalEvent`; our own flyTo has none. Listening
+         to raw wheel/mousedown on the container used to cancel the flight
+         before it started — in the hero the cursor sits over the map while
+         the visitor is simply scrolling the page. */
+      const onUserCamera = (e: { originalEvent?: unknown }) => {
+        if (e.originalEvent) cancel();
+      };
 
       let dived = false;
       const dive = () => {
@@ -342,13 +362,17 @@ const VectorMap = forwardRef<
           showPin();
           map.easeTo({ pitch: endPitch, duration: 1400, essential: true });
         };
+        map.on("dragstart", onUserCamera);
+        map.on("zoomstart", onUserCamera);
+        map.on("rotatestart", onUserCamera);
+
         map.once("moveend", settle);
         /* Safety net: if moveend never arrives, the pin still appears. */
         timers.push(setTimeout(settle, diveMs + 2500));
       };
       startIntroRef.current = dive;
 
-      if (compact) {
+      if (revealGated || compact) {
         /* Mounted early to warm the tiles; the parent triggers the reveal. */
         if (revealedRef.current) dive();
       } else {
@@ -377,12 +401,23 @@ const VectorMap = forwardRef<
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="ala-vector-map"
-      role="application"
-      aria-label="A'lâ Çekmeköy Nefes etkileşimli konum haritası"
-    />
+    <>
+      <div
+        ref={containerRef}
+        className="ala-vector-map"
+        role="application"
+        aria-label="A'lâ Çekmeköy Nefes etkileşimli konum haritası"
+      />
+      <p className="ala-map-credit">
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          © OpenStreetMap
+        </a>
+      </p>
+    </>
   );
 });
 

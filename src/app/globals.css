@@ -1783,8 +1783,16 @@ select.field option {
   backdrop-filter: blur(3px);
 }
 
-/* ---- Project pin: exact-point core + brand logo card ---- */
-.ala-pin {
+/* ---- Project pin: exact-point core + brand logo card ----
+   Doubled class: maplibre-gl.css loads after globals and its
+   `.maplibregl-marker { opacity: 1 }` (same specificity, later in the
+   cascade) kept the pin visible through the whole intro flight. */
+.ala-pin.ala-pin {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.ala-pin-inner {
   position: relative;
   display: grid;
   place-items: center;
@@ -1794,7 +1802,7 @@ select.field option {
     opacity 0.7s ease,
     transform 0.95s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.ala-pin.is-shown {
+.ala-pin-inner.is-shown {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
@@ -1879,7 +1887,7 @@ select.field option {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ala-pin { transition: none; }
+  .ala-pin-inner { transition: none; }
   .ala-pin-pulse { animation: none; opacity: 0; }
 }
 
@@ -2028,4 +2036,32 @@ select.field option {
 
 @media (prefers-reduced-motion: reduce) {
   .ala-hero-map-skeleton { animation: none; }
+}
+
+/* ---- Map credit: OSM/ODbL attribution is required, so it stays — but as a
+   near-invisible hairline instead of MapLibre's boxed control and "i" toggle. ---- */
+.ala-map-credit {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.45rem;
+  z-index: 6;
+  margin: 0;
+  font-size: 0.44rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  pointer-events: auto;
+}
+.ala-map-credit a {
+  color: rgba(0, 1, 46, 0.3);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+.ala-map-credit a:hover {
+  color: rgba(0, 1, 46, 0.65);
+}
+.ala-hero-map .ala-map-credit {
+  right: 0.5rem;
+  bottom: 0.35rem;
+  font-size: 0.4rem;
 }

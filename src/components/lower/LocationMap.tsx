@@ -237,7 +237,6 @@ export default function LocationMap() {
         <div className="ala-map-vignette" aria-hidden="true" />
         <div className="ala-map-grain" aria-hidden="true" />
 
-        <div className="ala-map-index" aria-hidden="true">41 / 29</div>
         <div className="ala-map-caption" aria-hidden="true">
           <strong>Ç E K M E K Ö Y</strong>
           <span>İSTANBUL · TÜRKİYE</span>

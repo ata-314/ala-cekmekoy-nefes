@@ -136,30 +136,39 @@ function AnimatedStage({
       // drifts up, and the page releases into the Marka section — one
       // continuous, fully reversible scrub.
       phaseOut("intro", 5);
-      phaseIn("info", 12);
-      phaseOut("info", 23);
-      phaseIn("advantages", 30);
-      phaseOut("advantages", 42);
-      phaseIn("gallery", 48);
+      phaseIn("info", 11);
+      phaseOut("info", 21);
+      phaseIn("advantages", 27);
+      phaseOut("advantages", 38);
+      phaseIn("gallery", 43);
       // (The 3D carousel drives its own motion — no scroll pan here.)
-      phaseOut("gallery", 59);
-      phaseIn("location", 64);
-      phaseOut("location", 75);
-      phaseIn("closing", 79);
-      phaseOut("closing", 83);
+      phaseOut("gallery", 55);
+      /* The location panel holds the longest: its map flies in from a
+         Türkiye-wide view and stays pannable while it is on stage. */
+      phaseIn("location", 59);
+      phaseOut("location", 78);
+      phaseIn("closing", 80);
+      phaseOut("closing", 84);
 
       /* Mount the hero map well before its phase (tiles need a head start),
-         then trigger its camera exactly as the panel lands. */
+         then trigger its camera exactly as the panel lands.
+
+         These offsets are fractions of the SCRUBBED distance, matching the
+         timeline's 0–100 units — a percentage start like "57% top" is a
+         fraction of the track's full height instead and fires far too late. */
+      const scrubbed = () => track.offsetHeight - window.innerHeight;
       ScrollTrigger.create({
         trigger: track,
-        start: "42% top",
+        start: () => `top top-=${scrubbed() * 0.3}`,
         once: true,
+        invalidateOnRefresh: true,
         onEnter: () => setMapArmed(true),
       });
       ScrollTrigger.create({
         trigger: track,
-        start: "62% top",
+        start: () => `top top-=${scrubbed() * 0.575}`,
         once: true,
+        invalidateOnRefresh: true,
         onEnter: () => setMapRevealed(true),
       });
       /* ---- Hand-off: the video's last frame TRANSFERS into the Marka

@@ -15,9 +15,9 @@ const VectorMap = dynamic(() => import("@/components/lower/VectorMap"), {
  * instantly (glass never fades — it stutters); the arrival animation comes
  * from the map camera easing onto the project and the pin blooming in.
  *
- * The map here is deliberately non-interactive: gestures inside a pinned,
- * scroll-scrubbed stage would fight the choreography. Exploring happens in
- * the Konum section, one tap away via the CTA.
+ * The map is pannable: cooperative gestures keep the page scroll intact
+ * (wheel scrolls the page, ⌘/Ctrl zooms, one finger scrolls and two fingers
+ * pan on touch), so visitors can move around without breaking the stage.
  */
 export default function LocationPhase({
   armed,
@@ -48,8 +48,10 @@ export default function LocationPhase({
         <div className="ala-hero-map mt-5">
           {armed && !failed && (
             <VectorMap
-              variant="compact"
-              interactive={false}
+              variant="full"
+              interactive
+              revealGated
+              flightDurationMs={5600}
               flightKey="hero"
               revealed={revealed}
               onReady={() => setReady(true)}
