@@ -29,9 +29,9 @@ export type VectorMapHandle = {
   zoomOut: () => void;
 };
 
-/* Page-load-scoped guard: re-renders and remounts never replay the long
-   intro flight (client brief). */
-let flightPlayed = false;
+/* Page-load-scoped guard, keyed per placement: re-renders and remounts never
+   replay an intro flight, but the hero and the Konum section each get one. */
+const flightsPlayed = new Set<string>();
 
 const PROJECT_LNGLAT: [number, number] = [
   PROJECT_LOCATION.lng,
@@ -61,11 +61,46 @@ function loadSvgImage(svg: string): Promise<HTMLImageElement> {
  */
 const VectorMap = forwardRef<
   VectorMapHandle,
-  { onReady: () => void; onFail: () => void; onFocusStart?: () => void }
->(function VectorMap({ onReady, onFail, onFocusStart }, ref) {
+  {
+    onReady: () => void;
+    onFail: () => void;
+    onFocusStart?: () => void;
+    /** "full": Türkiye overview → project. "compact": a short local ease-in
+        for the hero, where the panel is only on screen for a moment. */
+    variant?: "full" | "compact";
+    /** The hero map is a showcase inside a scrubbed stage — gestures there
+        would fight the scroll choreography. */
+    interactive?: boolean;
+    /** Separate guard per placement. */
+    flightKey?: string;
+    /** Compact variant only: the map mounts early so tiles are warm, but the
+        camera waits for this to flip so the reveal lands with the panel. */
+    revealed?: boolean;
+  }
+>(function VectorMap(
+  {
+    onReady,
+    onFail,
+    onFocusStart,
+    variant = "full",
+    interactive = true,
+    flightKey = "konum",
+    revealed = false,
+  },
+  ref
+) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const endPitchRef = useRef<number>(CAMERA_FLIGHT.end.pitch);
+  const startIntroRef = useRef<(() => void) | null>(null);
+  const revealedRef = useRef(false);
+
+  /* Compact placements fly when the parent says the panel is on screen. */
+  useEffect(() => {
+    if (!revealed) return;
+    revealedRef.current = true;
+    startIntroRef.current?.();
+  }, [revealed]);
 
   useImperativeHandle(ref, () => ({
     focus() {
@@ -130,19 +165,26 @@ const VectorMap = forwardRef<
     const flightMs = lowEnd ? 5200 : CAMERA_FLIGHT.durationMs;
     endPitchRef.current = endPitch;
 
-    const skipFlight = flightPlayed || reduced;
+    const compact = variant === "compact";
+    /* Compact: open just above the neighbourhood and ease down onto the
+       project — a country-wide dive is far too long for a hero phase. */
+    const startZoom = compact ? 12.9 : CAMERA_FLIGHT.start.zoom;
+    const startCenter = compact ? PROJECT_LNGLAT : CAMERA_FLIGHT.start.center;
+    const diveMs = compact ? 3200 : flightMs;
+    const skipFlight = flightsPlayed.has(flightKey) || reduced;
 
     let map: maplibregl.Map;
     try {
       map = new maplibregl.Map({
         container,
         style: structuredClone(brandMapStyle),
-        center: skipFlight ? PROJECT_LNGLAT : CAMERA_FLIGHT.start.center,
-        zoom: skipFlight ? CAMERA_FLIGHT.end.zoom : CAMERA_FLIGHT.start.zoom,
+        center: skipFlight ? PROJECT_LNGLAT : startCenter,
+        zoom: skipFlight ? CAMERA_FLIGHT.end.zoom : startZoom,
         pitch: skipFlight ? endPitch : CAMERA_FLIGHT.start.pitch,
         bearing: skipFlight ? CAMERA_FLIGHT.end.bearing : CAMERA_FLIGHT.start.bearing,
         attributionControl: { compact: true },
-        cooperativeGestures: true,
+        interactive,
+        cooperativeGestures: interactive,
         renderWorldCopies: false,
         maxTileCacheSize: 48,
         fadeDuration: 200,
@@ -260,7 +302,7 @@ const VectorMap = forwardRef<
       void addBrandImagery();
 
       if (skipFlight) {
-        flightPlayed = true;
+        flightsPlayed.add(flightKey);
         showPin();
         return;
       }
@@ -271,47 +313,61 @@ const VectorMap = forwardRef<
         cancelled = true;
         map.stop();
         showPin();
-        flightPlayed = true;
+        flightsPlayed.add(flightKey);
       };
       ["mousedown", "wheel", "touchstart"].forEach((ev) =>
         container.addEventListener(ev, cancel, { once: true, passive: true })
       );
 
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (!entries.some((en) => en.isIntersecting) || cancelled) return;
-          io.disconnect();
+      let dived = false;
+      const dive = () => {
+        if (dived || cancelled || disposed) return;
+        dived = true;
 
-          /* Fly level (pitch 0) — a pitched camera streams far more tiles and
-             is what made the dive stutter. The tilt eases in on arrival. */
-          map.flyTo({
-            center: PROJECT_LNGLAT,
-            zoom: CAMERA_FLIGHT.end.zoom,
-            bearing: CAMERA_FLIGHT.end.bearing,
-            pitch: 0,
-            duration: flightMs,
-            curve: 1.45,
-            essential: true,
-          });
+        /* Fly level (pitch 0) — a pitched camera streams far more tiles and
+           is what made the dive stutter. The tilt eases in on arrival. */
+        map.flyTo({
+          center: PROJECT_LNGLAT,
+          zoom: CAMERA_FLIGHT.end.zoom,
+          bearing: CAMERA_FLIGHT.end.bearing,
+          pitch: 0,
+          duration: diveMs,
+          curve: compact ? 1.1 : 1.45,
+          essential: true,
+        });
 
-          const settle = () => {
-            if (cancelled || disposed) return;
-            flightPlayed = true;
-            showPin();
-            map.easeTo({ pitch: endPitch, duration: 1400, essential: true });
-          };
-          map.once("moveend", settle);
-          /* Safety net: if moveend never arrives, the pin still appears. */
-          timers.push(setTimeout(settle, flightMs + 2500));
-        },
-        { threshold: 0.25 }
-      );
-      io.observe(container);
-      timers.push(setTimeout(() => io.disconnect(), 60000));
+        const settle = () => {
+          if (cancelled || disposed) return;
+          flightsPlayed.add(flightKey);
+          showPin();
+          map.easeTo({ pitch: endPitch, duration: 1400, essential: true });
+        };
+        map.once("moveend", settle);
+        /* Safety net: if moveend never arrives, the pin still appears. */
+        timers.push(setTimeout(settle, diveMs + 2500));
+      };
+      startIntroRef.current = dive;
+
+      if (compact) {
+        /* Mounted early to warm the tiles; the parent triggers the reveal. */
+        if (revealedRef.current) dive();
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            if (!entries.some((en) => en.isIntersecting) || cancelled) return;
+            io.disconnect();
+            dive();
+          },
+          { threshold: 0.25 }
+        );
+        io.observe(container);
+        timers.push(setTimeout(() => io.disconnect(), 60000));
+      }
     });
 
     return () => {
       disposed = true;
+      startIntroRef.current = null;
       timers.forEach(clearTimeout);
       marker.remove();
       map.remove();

@@ -1976,3 +1976,56 @@ select.field option {
   .ala-vector-map .maplibregl-ctrl-bottom-right { right: 0.2rem; bottom: 0.2rem; }
   .ala-vector-map .maplibregl-ctrl-attrib { font-size: 8px; }
 }
+
+/* ---- Hero location phase: framed map inside the glass panel ---- */
+.ala-hero-map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(246, 247, 252, 0.16);
+  background: #edeff5;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 18px 40px -26px rgba(0, 1, 46, 0.7);
+}
+.ala-hero-map .maplibregl-ctrl-attrib {
+  font-size: 8px;
+  padding: 0 0.4rem;
+}
+.ala-hero-map-skeleton,
+.ala-hero-map-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+.ala-hero-map-skeleton {
+  background:
+    linear-gradient(
+      100deg,
+      transparent 32%,
+      rgba(255, 255, 255, 0.55) 50%,
+      transparent 68%
+    ),
+    #e7eaf2;
+  background-size: 220% 100%, auto;
+  animation: ala-shimmer 1.9s ease-in-out infinite;
+}
+.ala-hero-map-fallback {
+  background: #e7eaf2;
+  color: rgba(0, 1, 46, 0.6);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+@media (max-width: 640px) {
+  .ala-hero-map { aspect-ratio: 4 / 3; border-radius: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ala-hero-map-skeleton { animation: none; }
+}

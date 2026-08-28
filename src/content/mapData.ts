@@ -42,4 +42,11 @@ export const mapCopy = {
   roadLabel: "Şile Otoyolu bağlantısı",
   coordinateLabel: "Proje koordinatı",
   posterSeries: "A'LÂ · LOCATION SERIES 01",
+  /* Hero phase — facts straight from the client's content guide. */
+  heroPanel: {
+    eyebrow: "Konum",
+    title: "Ormana komşu,\nana yola birkaç adım.",
+    note: "Lens Çekmeköy'ün hemen arkasında · Şile Otoyolu bağlantısına yaklaşık 15–20 m",
+    cta: "Konumu Keşfet",
+  },
 } as const;

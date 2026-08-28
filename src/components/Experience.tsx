@@ -16,7 +16,9 @@ import InfoPhase from "@/components/panels/InfoPhase";
 import AdvantagesPhase from "@/components/panels/AdvantagesPhase";
 import GalleryPhase from "@/components/panels/GalleryPhase";
 import ClosingPhase from "@/components/panels/ClosingPhase";
+import LocationPhase from "@/components/panels/LocationPhase";
 import { assets, brand } from "@/content/project";
+import { scrollToAnchor } from "@/lib/lenisStore";
 
 /**
  * Chooses between the scroll-choreographed stage and the reduced-motion
@@ -88,6 +90,10 @@ function AnimatedStage({
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  /* The hero map mounts early (warm tiles) and only flies when its phase
+     actually lands, so the reveal reads as one motion with the panel. */
+  const [mapArmed, setMapArmed] = useState(false);
+  const [mapRevealed, setMapRevealed] = useState(false);
   // Phases clear the fixed form on the right while it is open; the padding
   // eases away when the panel is dismissed so content re-centers.
   const phaseClass = `absolute inset-0 transition-[padding] duration-700 ease-out ${
@@ -130,15 +136,32 @@ function AnimatedStage({
       // drifts up, and the page releases into the Marka section — one
       // continuous, fully reversible scrub.
       phaseOut("intro", 5);
-      phaseIn("info", 13);
-      phaseOut("info", 26);
-      phaseIn("advantages", 34);
-      phaseOut("advantages", 47);
-      phaseIn("gallery", 54);
+      phaseIn("info", 12);
+      phaseOut("info", 23);
+      phaseIn("advantages", 30);
+      phaseOut("advantages", 42);
+      phaseIn("gallery", 48);
       // (The 3D carousel drives its own motion — no scroll pan here.)
-      phaseOut("gallery", 65);
-      phaseIn("closing", 71);
-      phaseOut("closing", 81);
+      phaseOut("gallery", 59);
+      phaseIn("location", 64);
+      phaseOut("location", 75);
+      phaseIn("closing", 79);
+      phaseOut("closing", 83);
+
+      /* Mount the hero map well before its phase (tiles need a head start),
+         then trigger its camera exactly as the panel lands. */
+      ScrollTrigger.create({
+        trigger: track,
+        start: "42% top",
+        once: true,
+        onEnter: () => setMapArmed(true),
+      });
+      ScrollTrigger.create({
+        trigger: track,
+        start: "62% top",
+        once: true,
+        onEnter: () => setMapRevealed(true),
+      });
       /* ---- Hand-off: the video's last frame TRANSFERS into the Marka
          section and becomes its image.
 
@@ -315,6 +338,13 @@ function AnimatedStage({
               stage width and simply passes behind the glass panel. */}
           <section data-phase="gallery" className="pointer-events-auto absolute inset-0">
             <GalleryPhase />
+          </section>
+          <section data-phase="location" className={`pointer-events-auto ${phaseClass}`}>
+            <LocationPhase
+              armed={mapArmed}
+              revealed={mapRevealed}
+              onExplore={() => scrollToAnchor("konum")}
+            />
           </section>
           <section data-phase="closing" className={`pointer-events-auto ${phaseClass}`}>
             <ClosingPhase onCtaClick={onCtaClick} />
