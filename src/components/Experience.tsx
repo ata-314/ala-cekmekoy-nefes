@@ -323,8 +323,10 @@ function AnimatedStage({
           className="h-full w-full object-cover"
         />
       </div>
-      {/* Snow ground shows around the video frame as it shrinks into a card */}
-      <div className="sticky top-0 h-screen overflow-hidden bg-snow">
+      {/* Snow ground shows around the video frame as it shrinks into a card.
+          dvh: mobile URL bars shrink the visible viewport — 100vh would push
+          the phase content and progress bar behind the browser chrome. */}
+      <div className="sticky top-0 h-dvh overflow-hidden bg-snow">
         <div
           data-video-frame
           className="absolute inset-0 overflow-hidden will-change-transform"

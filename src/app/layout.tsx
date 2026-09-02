@@ -36,6 +36,8 @@ export const viewport: Viewport = {
   themeColor: "#00012e",
   width: "device-width",
   initialScale: 1,
+  /* Edge-to-edge on notched phones; fixed elements pad with safe-area env(). */
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

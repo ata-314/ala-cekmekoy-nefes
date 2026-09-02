@@ -32,7 +32,7 @@ export default function LocationPhase({
   const [ready, setReady] = useState(false);
 
   return (
-    <div className="flex h-full items-center justify-center px-5 sm:px-8">
+    <div className="flex h-full items-center justify-center px-5 pb-20 pt-20 sm:px-8 sm:pb-0 sm:pt-0">
       <div className="glass w-full max-w-xl rounded-[28px] bg-obsidian-900/55 p-5 sm:p-7">
         <p className="mb-2.5 text-[0.62rem] font-bold uppercase tracking-[0.4em] text-snow/50">
           {mapCopy.heroPanel.eyebrow}

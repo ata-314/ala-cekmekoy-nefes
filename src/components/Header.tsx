@@ -249,7 +249,7 @@ export default function Header({ onContact }: { onContact: () => void }) {
             type="button"
             onClick={goTop}
             aria-label="Sayfanın başına dön"
-            className={`cta fixed bottom-5 right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full text-lg sm:bottom-7 sm:right-7 ${
+            className={`cta fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-12 w-12 items-center justify-center rounded-full text-lg sm:bottom-7 sm:right-7 ${
               isLight
                 ? "border border-obsidian-950/10 bg-white/85 text-obsidian-950 shadow-lg backdrop-blur-xl"
                 : "glass bg-obsidian-900/60 text-snow"

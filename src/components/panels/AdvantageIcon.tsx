@@ -7,7 +7,7 @@ export default function AdvantageIcon({ src, alt }: { src: string; alt: string }
   const { imgRef, missing, onError } = useImageFallback();
 
   return (
-    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-accent/30 bg-accent/10">
+    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-accent/10 sm:h-11 sm:w-11 sm:rounded-2xl">
       {missing ? (
         <span
           aria-hidden
@@ -19,7 +19,7 @@ export default function AdvantageIcon({ src, alt }: { src: string; alt: string }
           ref={imgRef}
           src={src}
           alt={alt}
-          className="h-5 w-5"
+          className="h-4 w-4 sm:h-5 sm:w-5"
           onError={onError}
         />
       )}

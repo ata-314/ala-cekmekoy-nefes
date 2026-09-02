@@ -4,7 +4,8 @@ import { identity, nav, form, footer } from "@/content/project";
 /** Corporate footer — obsidian ground, white logotype, contact from the brand book. */
 export default function Footer() {
   return (
-    <footer className="bg-obsidian-950 px-5 pb-10 pt-12 text-snow sm:px-8 sm:pt-14">
+    // Mobile: the fixed "Bilgi Al" pill floats over the tail — clear it.
+    <footer className="bg-obsidian-950 px-5 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-12 text-snow sm:px-8 sm:pt-14 lg:pb-10">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <Logo className="h-16" />

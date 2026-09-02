@@ -6,7 +6,7 @@ export default function ClosingPhase({
   onCtaClick?: () => void;
 }) {
   return (
-    <div className="flex h-full items-center justify-center px-5 sm:px-8">
+    <div className="flex h-full items-center justify-center px-5 pb-20 pt-20 sm:px-8 sm:pb-0 sm:pt-0">
       <div
         data-reveal
         className="glass max-w-xl rounded-3xl p-8 text-center sm:p-12"

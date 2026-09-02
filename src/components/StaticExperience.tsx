@@ -24,19 +24,19 @@ export default function StaticExperience({
       />
       <div aria-hidden className="fixed inset-0 bg-obsidian-950/60" />
       <div className="relative z-10 lg:pr-[420px] xl:pr-[450px]">
-        <section className="min-h-screen">
+        <section className="min-h-svh">
           <IntroPhase />
         </section>
-        <section className="min-h-screen">
+        <section className="min-h-svh">
           <InfoPhase />
         </section>
-        <section className="min-h-screen">
+        <section className="min-h-svh">
           <AdvantagesPhase />
         </section>
-        <section className="min-h-screen">
+        <section className="min-h-svh">
           <GalleryPhase />
         </section>
-        <section className="min-h-screen">
+        <section className="min-h-svh">
           <ClosingPhase onCtaClick={onCtaClick} />
         </section>
       </div>

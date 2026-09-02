@@ -3,7 +3,7 @@ import Gallery3D from "./Gallery3D";
 
 export default function GalleryPhase() {
   return (
-    <div className="flex h-full flex-col justify-center px-5 sm:px-8">
+    <div className="flex h-full flex-col justify-center px-5 pb-16 pt-20 sm:px-8 sm:pb-0 sm:pt-0">
       <div data-reveal className="mb-4 max-w-2xl sm:mb-6">
         <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.4em] text-mist-400">
           {gallery.eyebrow}

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { form } from "@/content/project";
+import { lenisStore } from "@/lib/lenisStore";
 import LeadForm from "./LeadForm";
 
 /**
@@ -25,7 +26,16 @@ export default function MobileLeadSheet({
     };
     document.addEventListener("keydown", onKey);
     sheetRef.current?.focus();
-    return () => document.removeEventListener("keydown", onKey);
+    // Lock the page while the sheet is up: one-finger scroll must stay
+    // inside the form, not drag the scrubbed stage behind the overlay.
+    lenisStore.current?.stop();
+    const prevOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.documentElement.style.overflow = prevOverflow;
+      lenisStore.current?.start();
+    };
   }, [open, onOpenChange]);
 
   return (
@@ -33,7 +43,7 @@ export default function MobileLeadSheet({
       <button
         type="button"
         onClick={() => onOpenChange(true)}
-        className="cta fixed bottom-5 left-1/2 z-40 -translate-x-1/2 rounded-full bg-accent px-8 py-3.5 text-sm font-bold tracking-wide text-obsidian-950 shadow-xl"
+        className="cta fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-40 -translate-x-1/2 rounded-full bg-accent px-8 py-3.5 text-sm font-bold tracking-wide text-obsidian-950 shadow-xl"
       >
         {form.submit}
       </button>
@@ -56,7 +66,7 @@ export default function MobileLeadSheet({
               aria-modal="true"
               aria-label={form.title}
               tabIndex={-1}
-              className="glass fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto rounded-t-3xl bg-obsidian-900/70 p-6 pb-10 outline-none"
+              className="glass fixed inset-x-0 bottom-0 z-50 max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-3xl bg-obsidian-900/70 p-6 pb-[calc(2.5rem+env(safe-area-inset-bottom))] outline-none"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
