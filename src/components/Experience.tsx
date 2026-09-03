@@ -118,15 +118,56 @@ function AnimatedStage({
         },
       });
 
-      // Glass panels never animate: fading/translating an element that owns
-      // a backdrop-filter forces per-frame blur repaints — the stutter and
-      // the "late" feel. Phases now switch instantly at their scrub marks,
-      // arriving fully frosted; reversal is equally instant.
+      // Desktop: glass panels never animate — fading/translating an element
+      // that owns a backdrop-filter forces per-frame blur repaints (stutter,
+      // "late" feel) on top of the frame-by-frame video scrub. Phases switch
+      // instantly at their scrub marks, arriving fully frosted.
+      //
+      // Mobile: the video is an ambient loop, so the blur already repaints
+      // every frame — a soft scrub-driven entrance costs nothing extra. Each
+      // card drifts up and settles (power2.out) over ~3.5 scroll units while
+      // its inner blocks ([data-reveal]) follow with a gentle stagger; the
+      // exit is a quicker lift-and-fade. Fully reversible with the scrub.
+      const soft = window.matchMedia("(max-width: 1023px)").matches;
       const phaseIn = (name: string, at: number) => {
-        tl.set(`[data-phase="${name}"]`, { autoAlpha: 1 }, at);
+        const sel = `[data-phase="${name}"]`;
+        if (!soft) {
+          tl.set(sel, { autoAlpha: 1 }, at);
+          return;
+        }
+        tl.fromTo(
+          sel,
+          { autoAlpha: 0, y: 44, scale: 0.965 },
+          { autoAlpha: 1, y: 0, scale: 1, duration: 3.5, ease: "power2.out" },
+          at - 1
+        );
+        const blocks = track.querySelectorAll(`${sel} [data-reveal]`);
+        if (blocks.length) {
+          tl.fromTo(
+            blocks,
+            { autoAlpha: 0, y: 22 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 2.6,
+              ease: "power2.out",
+              stagger: 0.35,
+            },
+            at - 0.4
+          );
+        }
       };
       const phaseOut = (name: string, at: number) => {
-        tl.set(`[data-phase="${name}"]`, { autoAlpha: 0 }, at);
+        const sel = `[data-phase="${name}"]`;
+        if (!soft) {
+          tl.set(sel, { autoAlpha: 0 }, at);
+          return;
+        }
+        tl.to(
+          sel,
+          { autoAlpha: 0, y: -28, scale: 0.98, duration: 2.4, ease: "power2.in" },
+          at
+        );
       };
 
       // Choreography over a 100-unit scrubbed timeline (≈ scroll progress %).
