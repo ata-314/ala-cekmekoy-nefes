@@ -27,17 +27,21 @@ export default function MosaicGallery() {
     columns[i % 3].items.push({ item, index: i });
   });
 
-  const ratios = ["aspect-[3/4]", "aspect-[4/3]", "aspect-square"];
+  /* Desktop rhythm: varied ratios per column. Mobile: the columns dissolve
+     (display: contents) into one ordered 2-up grid — 01 as a full-width
+     opener, then four tidy pairs — so no image is ever orphaned by the
+     column split or drifted apart by the column parallax (md+ only). */
+  const mdRatios = ["md:aspect-[3/4]", "md:aspect-[4/3]", "md:aspect-square"];
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-6">
         {columns.map((col, c) => (
           <div
             key={c}
             data-mcol
             data-speed={col.speed}
-            className={`flex flex-col gap-4 md:gap-6 ${c === 1 ? "md:mt-16" : ""} ${c === 2 ? "col-span-2 grid grid-cols-2 gap-4 self-start md:col-span-1 md:mt-32 md:flex md:flex-col md:gap-6" : ""}`}
+            className={`contents md:flex md:flex-col md:gap-6 ${c === 1 ? "md:mt-16" : ""} ${c === 2 ? "md:mt-32" : ""}`}
           >
             {col.items.map(({ item, index }) => (
               <button
@@ -45,12 +49,15 @@ export default function MosaicGallery() {
                 type="button"
                 onClick={() => setLightbox(item)}
                 aria-label={`${item.alt} — büyüt`}
-                className="group relative block cursor-zoom-in overflow-hidden rounded-xl text-left"
+                style={{ order: index }}
+                className={`group relative block cursor-zoom-in overflow-hidden rounded-xl text-left md:order-none ${
+                  index === 0 ? "col-span-2 md:col-span-1" : ""
+                }`}
               >
                 <SmartImage
                   src={item.src}
                   alt={item.alt}
-                  className={`w-full ${ratios[(index + c) % 3]} transition-transform duration-700 ease-out group-hover:scale-[1.06]`}
+                  className={`w-full ${index === 0 ? "aspect-[16/10]" : "aspect-square"} ${mdRatios[(index + c) % 3]} transition-transform duration-700 ease-out group-hover:scale-[1.06]`}
                 />
                 {/* Index tag — brutalist corner marker */}
                 <span className="absolute left-3 top-3 border border-snow/40 bg-obsidian-950/45 px-2 py-0.5 text-[0.6rem] font-bold tracking-[0.2em] text-snow backdrop-blur-sm">

@@ -142,8 +142,12 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
         );
       });
 
-      /* Mosaic gallery: columns drift at different speeds */
-      gsap.utils.toArray<HTMLElement>("[data-mcol]").forEach((col) => {
+      /* Mosaic gallery: columns drift at different speeds (md+ only — on
+         phones the columns are display:contents and the grid is flat) */
+      const mosaicCols = window.matchMedia("(min-width: 768px)").matches
+        ? gsap.utils.toArray<HTMLElement>("[data-mcol]")
+        : [];
+      mosaicCols.forEach((col) => {
         const speed = parseFloat(col.dataset.speed || "0");
         gsap.fromTo(
           col,
@@ -366,7 +370,7 @@ export default function LowerSections({ onContact }: { onContact: () => void }) 
             <h2 data-lreveal className="font-display text-4xl leading-tight sm:text-5xl">
               {galleryBelow.heading}
             </h2>
-            <p data-lreveal className="max-w-[220px] text-right text-xs leading-relaxed text-snow/50">
+            <p data-lreveal className="max-w-[260px] text-left text-xs leading-relaxed text-snow/50 md:max-w-[220px] md:text-right">
               Görsele tıklayın, büyütün — tüm kareler tanıtım görselleştirmeleridir.
             </p>
           </div>
